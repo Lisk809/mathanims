@@ -21,14 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: teatimeguest/setup-texlive-action@9855afe404b85dff721b382b9b50337e2dc252bd
+      - uses: paolobrasolin/setup-texlive-action@v1
         with:
-          packages: |
-            scheme-basic
-            mathtools
-            standalone
-            preview
-            dvisvgm
+          profile-path: ${{ github.workspace }}/.github/texlive.profile
+          packages-path: ${{ github.workspace }}/.github/texlive.packages
       - uses: prefix-dev/setup-pixi@19b5e6071f70a82d3c5741d7b3f98a71d192eb20
       - name: Render Scenes
         run: |
