@@ -16,6 +16,8 @@ jobs:
             file: paulinas_scenes
           - name: horodisks
             file: horodisks
+          - name: anim
+            file: anim1
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
