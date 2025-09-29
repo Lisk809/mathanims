@@ -1,0 +1,35 @@
+name: render
+on: push
+jobs:
+  render-video:
+    name: Render video (${{ matrix.name }})
+    strategy:
+      matrix:
+        include:
+          - name: main-result
+            file: main_result
+          - name: benedikt
+            file: animation
+          - name: introduction
+            file: introduction
+          - name: paulina
+            file: paulinas_scenes
+          - name: horodisks
+            file: horodisks
+          - name: anim
+            file: anim1
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render Scenes
+        uses: manim-kindergarten/manim_action_renderer@v1.2
+        with:
+          path: (${{ matrix.file }}).py
+          scene_names: ${{ matrix.name }}
+      - name: Save output as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: |
+            outputs/(${{ matrix.file }}).mp4
+          retention-days: 5
