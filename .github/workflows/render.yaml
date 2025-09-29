@@ -39,12 +39,13 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install manim
+        pip install numpy
         #pip install -r requirements.txt  # 如果有其他依赖
 
     - name: Render Manim animations
       run: |
         # 渲染单个文件
-        manim -ql main.py SquareToCircle
+        manim -qh anim1.py EllipseProblem
         # 或者渲染目录中的所有文件
         # manim -ql ./
         
