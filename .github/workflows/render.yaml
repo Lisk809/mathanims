@@ -24,7 +24,7 @@ jobs:
       - name: Render Scenes
         uses: manim-kindergarten/manim_action_renderer@v1.2
         with:
-          path: (${{ matrix.file }}).py
+          source_file: (${{ matrix.file }}).py
           scene_names: ${{ matrix.name }}
       - name: Save output as artifacts
         uses: actions/upload-artifact@v4
