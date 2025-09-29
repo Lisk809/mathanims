@@ -44,7 +44,7 @@ jobs:
     - name: Render Manim animations
       run: |
         # 渲染单个文件
-        manim -ql main.py MyScene
+        manim -ql main.py SquareToCircle
         # 或者渲染目录中的所有文件
         # manim -ql ./
         
