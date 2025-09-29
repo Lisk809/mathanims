@@ -39,7 +39,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install manim
-        pip install -r requirements.txt  # 如果有其他依赖
+        #pip install -r requirements.txt  # 如果有其他依赖
 
     - name: Render Manim animations
       run: |
