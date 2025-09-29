@@ -32,6 +32,7 @@ jobs:
           texlive-science \
           tipa \
           libcairo2-dev \
+          libpango1.0-dev\
           pkg-config
 
     - name: Install Python dependencies
