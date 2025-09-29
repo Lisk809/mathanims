@@ -1,35 +1,55 @@
-name: render
-on: push
+name: Render Manim Animations
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # 允许手动触发
+
 jobs:
-  render-video:
-    name: Render video (${{ matrix.name }})
-    strategy:
-      matrix:
-        include:
-          - name: main-result
-            file: main_result
-          - name: benedikt
-            file: animation
-          - name: introduction
-            file: introduction
-          - name: paulina
-            file: paulinas_scenes
-          - name: horodisks
-            file: horodisks
-          - name: anim
-            file: anim1
+  render:
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v4
-      - name: Render Scenes
-        uses: manim-kindergarten/manim_action_renderer@v1.2
-        with:
-          source_file: (${{ matrix.file }}).py
-          scene_names: ${{ matrix.name }}
-      - name: Save output as artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.name }}
-          path: |
-            outputs/(${{ matrix.file }}).mp4
-          retention-days: 5
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          ffmpeg \
+          texlive \
+          texlive-latex-extra \
+          texlive-fonts-extra \
+          texlive-latex-recommended \
+          texlive-science \
+          tipa \
+          libcairo2-dev \
+          pkg-config
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install manim
+        pip install -r requirements.txt  # 如果有其他依赖
+
+    - name: Render Manim animations
+      run: |
+        # 渲染单个文件
+        manim -ql main.py MyScene
+        # 或者渲染目录中的所有文件
+        # manim -ql ./
+        
+    - name: Upload rendered videos
+      uses: actions/upload-artifact@v4
+      with:
+        name: manim-videos
+        path: media/videos/**/*.mp4
+        retention-days: 30
