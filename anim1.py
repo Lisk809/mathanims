@@ -30,8 +30,8 @@ class EllipseProblem(Scene):
         )
         
         # 添加坐标标签
-        x_labels = axes.get_x_axis_labels({"1": 1, "2": 2, "3": 3, "-1": -1, "-2": -2, "-3": -3})
-        y_labels = axes.get_y_axis_labels({"1": 1, "2": 2, "3": 3, "-1": -1, "-2": -2, "-3": -3})
+        #x_labels = axes.get_x_axis_labels({"1": 1, "2": 2, "3": 3, "-1": -1, "-2": -2, "-3": -3})
+        #y_labels = axes.get_y_axis_labels({"1": 1, "2": 2, "3": 3, "-1": -1, "-2": -2, "-3": -3})
         
         # 椭圆方程：x²/3 + y²/4 = 1
         ellipse = Ellipse(
@@ -53,7 +53,7 @@ class EllipseProblem(Scene):
         
         # 显示坐标系和椭圆
         self.play(Create(axes))
-        self.play(Write(x_labels), Write(y_labels))
+        #self.play(Write(x_labels), Write(y_labels))
         self.play(Create(ellipse))
         
         # 显示点
