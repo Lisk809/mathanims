@@ -29,7 +29,6 @@ jobs:
           texlive-xetex\
           texlive-lang-chinese\
           fonts-noto-cjk\
-          fonts-wqy-zenhei\
           texlive-latex-extra \
           texlive-fonts-extra \
           texlive-latex-recommended \

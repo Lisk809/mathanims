@@ -1,9 +1,11 @@
 from manim import *
 import numpy as np
+config.tex_engine = "xelatex"
 
 class EllipseProblem(Scene):
     def construct(self):
         # 标题
+        chinese_font = "Noto Sans CJK SC"
         title = Text("椭圆定点问题", font_size=48, color=BLUE)
         self.play(Write(title))
         self.wait(1)
