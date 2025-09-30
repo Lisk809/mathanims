@@ -99,6 +99,82 @@ class EllipseProblem(Scene):
             FadeOut(label_B),
             FadeOut(label_P)
         )
+        # 推导椭圆方程
+        derivation_title = Text("推导椭圆方程", font_size=36, color=BLUE)
+        derivation_title.to_edge(UP)
+        
+        step1 = Text("设椭圆方程为：", font_size=24)
+        step1.next_to(derivation_title, DOWN, buff=0.5)
+        
+        general_eq = MathTex("\\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1", font_size=32)
+        general_eq.next_to(step1, DOWN, buff=0.3)
+        
+        step2 = Text("代入点A(0,-2)：", font_size=24)
+        step2.next_to(general_eq, DOWN, buff=0.5)
+        
+        eq_A = MathTex("\\frac{0^2}{a^2} + \\frac{(-2)^2}{b^2} = 1", font_size=32)
+        eq_A.next_to(step2, DOWN, buff=0.3)
+        
+        eq_A_simplified = MathTex("\\frac{4}{b^2} = 1", font_size=32)
+        eq_A_simplified.next_to(eq_A, DOWN, buff=0.3)
+        
+        eq_A_result = MathTex("b^2 = 4", font_size=32)
+        eq_A_result.next_to(eq_A_simplified, DOWN, buff=0.3)
+        
+        step3 = Text("代入点B(3/2,-1)：", font_size=24)
+        step3.next_to(eq_A_result, DOWN, buff=0.5)
+        
+        eq_B = MathTex("\\frac{(3/2)^2}{a^2} + \\frac{(-1)^2}{4} = 1", font_size=32)
+        eq_B.next_to(step3, DOWN, buff=0.3)
+        
+        eq_B_simplified = MathTex("\\frac{9/4}{a^2} + \\frac{1}{4} = 1", font_size=32)
+        eq_B_simplified.next_to(eq_B, DOWN, buff=0.3)
+        
+        eq_B_further = MathTex("\\frac{9}{4a^2} = \\frac{3}{4}", font_size=32)
+        eq_B_further.next_to(eq_B_simplified, DOWN, buff=0.3)
+        
+        eq_B_result = MathTex("a^2 = 3", font_size=32)
+        eq_B_result.next_to(eq_B_further, DOWN, buff=0.3)
+        
+        final_eq = MathTex("\\frac{x^2}{3} + \\frac{y^2}{4} = 1", font_size=36)
+        final_eq.next_to(eq_B_result, DOWN, buff=0.5)
+        
+        self.play(Write(derivation_title))
+        self.wait(1)
+        self.play(Write(step1))
+        self.play(Write(general_eq))
+        self.wait(1)
+        self.play(Write(step2))
+        self.play(Write(eq_A))
+        self.wait(1)
+        self.play(Write(eq_A_simplified))
+        self.wait(1)
+        self.play(Write(eq_A_result))
+        self.wait(1)
+        self.play(Write(step3))
+        self.play(Write(eq_B))
+        self.wait(1)
+        self.play(Write(eq_B_simplified))
+        self.wait(1)
+        self.play(Write(eq_B_further))
+        self.wait(1)
+        self.play(Write(eq_B_result))
+        self.wait(1)
+        self.play(Write(final_eq))
+        self.wait(2)
+        
+        # 清除文字，重新显示图形
+        self.play(*[FadeOut(obj) for obj in self.mobjects])
+        
+        # 重新显示坐标系和椭圆
+        self.axes = axes
+        self.ellipse = ellipse
+        self.point_A = point_A
+        self.point_B = point_B
+        self.point_P = point_P
+        self.label_A = label_A
+        self.label_B = label_B
+        self.label_P = label_P
         self.play(Create(axes))
         self.play(Write(x_labels), Write(y_labels))
         self.play(Create(ellipse))
@@ -174,11 +250,11 @@ class EllipseProblem(Scene):
         # 清除文字，重新显示图形
         self.play(*[FadeOut(obj) for obj in self.mobjects])
         # 重新显示坐标系和椭圆
-        self.play(Create(axes))
-        self.play(Create(ellipse))
-        self.play(Create(point_A), Write(label_A))
-        self.play(Create(point_B), Write(label_B))
-        self.play(Create(point_P), Write(label_P))
+        self.play(Create(self.axes))
+        self.play(Create(self.ellipse))
+        self.play(Create(self.point_A), Write(self.label_A))
+        self.play(Create(self.point_B), Write(self.label_B))
+        self.play(Create(self.point_P), Write(self.label_P))
         
         # 显示椭圆方程
         eq_text = MathTex("\\frac{x^2}{3} + \\frac{y^2}{4} = 1", font_size=36)
@@ -189,7 +265,7 @@ class EllipseProblem(Scene):
         def polar_line_func(x):
             return (2*x - 6) / 3  # 2x - 3y = 6 => y = (2x - 6)/3
         
-        polar_line = axes.plot(
+        polar_line = self.axes.plot(
             polar_line_func,
             x_range=[-3, 3],
             color=PURPLE,
@@ -305,75 +381,8 @@ class EllipseProblem(Scene):
         self.play(*[FadeOut(obj) for obj in self.mobjects])
         
         # 重新显示坐标系和椭圆
-        self.play(Create(axes))
-        self.play(Create(ellipse))
-        self.play(Create(point_A), Write(label_A))
-        self.play(Create(point_B), Write(label_B))
-        self.play(Create(point_P), Write(label_P))
-        # 显示椭圆方程
-        eq_text = MathTex("\\frac{x^2}{3} + \\frac{y^2}{4} = 1", font_size=36)
-        eq_text.to_corner(UL)
-        self.play(Write(eq_text))
-        
-        # 显示定点
-        fixed_point_dot = Dot(axes.coords_to_point(0, 2), color=YELLOW, radius=0.1)
-        fixed_label = Text("(0,2)", font_size=24).next_to(fixed_point_dot, UP)
-        
-        self.play(Create(fixed_point_dot), Write(fixed_label))
-        
-        # 显示几条过P的直线都经过(0,2)
-        k_values = [-2, -1, 0.5, 1.5]
-        
-        for k in k_values:
-            line_func = lambda x, k=k: k * x - k - 2
-            line = axes.plot(
-                line_func,
-                x_range=[-3, 3],
-                color=BLUE,
-                stroke_width=2
-            )
-            self.play(Create(line), run_time=1)
-            self.wait(0.5)
-            
-        self.wait(2)
-        
-    def final_summary(self):
-        # 清除图形，显示总结
-        self.play(*[FadeOut(obj) for obj in self.mobjects])
-        
-        summary_title = Text("总结", font_size=36, color=BLUE)
-        summary_title.to_edge(UP)
-        
-        self.play(Write(summary_title))
-        self.wait(1)
-        
-        point1 = Text("1. 椭圆方程为：x²/3 + y²/4 = 1", font_size=24)
-        point1.next_to(summary_title, DOWN, buff=0.5)
-        
-        point2 = Text("2. 使用极点极线理论，点P(1,-2)对应的极线为2x-3y=6", font_size=24)
-        point2.next_to(point1, DOWN, buff=0.3)
-        
-        point3 = Text("3. 使用常规方法，设直线y+2=k(x-1)，联立椭圆方程", font_size=24)
-        point3.next_to(point2, DOWN, buff=0.3)
-        
-        point4 = Text("4. 应用韦达定理，证明直线MN恒过定点(0,2)", font_size=24)
-        point4.next_to(point3, DOWN, buff=0.3)
-        
-        point5 = Text("5. 两种方法均得到相同结论，验证了结果的正确性", font_size=24)
-        point5.next_to(point4, DOWN, buff=0.3)
-        
-        final_conclusion = Text("直线MN恒过定点(0,2)", font_size=32, color=YELLOW)
-        final_conclusion.next_to(point5, DOWN, buff=0.5)
-        
-        self.play(Write(point1))
-        self.wait(1)
-        self.play(Write(point2))
-        self.wait(1)
-        self.play(Write(point3))
-        self.wait(1)
-        self.play(Write(point4))
-        self.wait(1)
-        self.play(Write(point5))
-        self.wait(1)
-        self.play(Write(final_conclusion))
-        self.wait(3)
+        self.play(Create(self.axes))
+        self.play(Create(self.ellipse))
+        self.play(Create(self.point_A), Write(self.label_A))
+        self.play(Create(self.point_B), Write(self.label_B))
+        self.play(Create(self.point_P), Write(self.label_P))
