@@ -19,7 +19,7 @@ class EllipseProblem(Scene):
         self.conventional_method()
         
         # 最终总结
-        #self.final_summary()
+        self.final_summary()
         
     def setup_coordinate_system(self):
         # 步骤标题
@@ -78,8 +78,7 @@ class EllipseProblem(Scene):
         self.play(Create(axes))
         self.play(Write(x_labels), Write(y_labels))
         self.play(Create(ellipse))
-        
-        # 显示点
+# 显示点
         self.play(Create(point_A), Write(label_A))
         self.play(Create(point_B), Write(label_B))
         self.play(Create(point_P), Write(label_P))
@@ -99,68 +98,80 @@ class EllipseProblem(Scene):
             FadeOut(label_B),
             FadeOut(label_P)
         )
-        # 推导椭圆方程
+        
+        # 推导椭圆方程 - 使用两列布局
         derivation_title = Text("推导椭圆方程", font_size=36, color=BLUE)
         derivation_title.to_edge(UP)
         
+        # 左列
+        left_column = VGroup()
+        
         step1 = Text("设椭圆方程为：", font_size=24)
-        step1.next_to(derivation_title, DOWN, buff=0.5)
+        left_column.add(step1)
         
         general_eq = MathTex("\\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1", font_size=32)
         general_eq.next_to(step1, DOWN, buff=0.3)
+        left_column.add(general_eq)
         
         step2 = Text("代入点A(0,-2)：", font_size=24)
         step2.next_to(general_eq, DOWN, buff=0.5)
+        left_column.add(step2)
         
         eq_A = MathTex("\\frac{0^2}{a^2} + \\frac{(-2)^2}{b^2} = 1", font_size=32)
         eq_A.next_to(step2, DOWN, buff=0.3)
+        left_column.add(eq_A)
         
         eq_A_simplified = MathTex("\\frac{4}{b^2} = 1", font_size=32)
         eq_A_simplified.next_to(eq_A, DOWN, buff=0.3)
+        left_column.add(eq_A_simplified)
         
         eq_A_result = MathTex("b^2 = 4", font_size=32)
         eq_A_result.next_to(eq_A_simplified, DOWN, buff=0.3)
+        left_column.add(eq_A_result)
+        
+        # 右列
+        right_column = VGroup()
         
         step3 = Text("代入点B(3/2,-1)：", font_size=24)
-        step3.next_to(eq_A_result, DOWN, buff=0.5)
+        right_column.add(step3)
         
         eq_B = MathTex("\\frac{(3/2)^2}{a^2} + \\frac{(-1)^2}{4} = 1", font_size=32)
-        eq_B.next_to(step3, DOWN, buff=0.3)
+        eq_B.next_to%(step3, DOWN, buff=0.3)
+        right_column.add(eq_B)
         
         eq_B_simplified = MathTex("\\frac{9/4}{a^2} + \\frac{1}{4} = 1", font_size=32)
         eq_B_simplified.next_to(eq_B, DOWN, buff=0.3)
+        right_column.add(eq_B_simplified)
         
         eq_B_further = MathTex("\\frac{9}{4a^2} = \\frac{3}{4}", font_size=32)
         eq_B_further.next_to(eq_B_simplified, DOWN, buff=0.3)
+        right_column.add(eq_B_further)
         
         eq_B_result = MathTex("a^2 = 3", font_size=32)
         eq_B_result.next_to(eq_B_further, DOWN, buff=0.3)
-        
+        right_column.add(eq_B_result)
+# 最终方程
         final_eq = MathTex("\\frac{x^2}{3} + \\frac{y^2}{4} = 1", font_size=36)
         final_eq.next_to(eq_B_result, DOWN, buff=0.5)
+        right_column.add(final_eq)
+        
+        # 定位两列
+        left_column.move_to(LEFT * 3.5)
+        right_column.move_to(RIGHT * 3.5)
         
         self.play(Write(derivation_title))
         self.wait(1)
-        self.play(Write(step1))
-        self.play(Write(general_eq))
-        self.wait(1)
-        self.play(Write(step2))
-        self.play(Write(eq_A))
-        self.wait(1)
-        self.play(Write(eq_A_simplified))
-        self.wait(1)
-        self.play(Write(eq_A_result))
-        self.wait(1)
-        self.play(Write(step3))
-        self.play(Write(eq_B))
-        self.wait(1)
-        self.play(Write(eq_B_simplified))
-        self.wait(1)
-        self.play(Write(eq_B_further))
-        self.wait(1)
-        self.play(Write(eq_B_result))
-        self.wait(1)
-        self.play(Write(final_eq))
+        
+        # 显示左列
+        for obj in left_column:
+            self.play(Write(obj))
+            self.wait(0.5)
+        
+        # 显示右列
+        for obj in right_column:
+            self.play(Write(obj))
+            self.wait(0.5)
+        
         self.wait(2)
         
         # 清除文字，重新显示图形
@@ -175,6 +186,7 @@ class EllipseProblem(Scene):
         self.label_A = label_A
         self.label_B = label_B
         self.label_P = label_P
+        
         self.play(Create(axes))
         self.play(Write(x_labels), Write(y_labels))
         self.play(Create(ellipse))
@@ -198,57 +210,91 @@ class EllipseProblem(Scene):
         self.play(Write(method_title))
         self.wait(1)
         
-        # 极点极线解释
-        explanation1 = Text("极点极线理论：对于圆锥曲线，给定一点P，", font_size=24)
-        explanation1.next_to(method_title, DOWN, buff=0.3)
+        # 左列 - 理论解释
+        left_column = VGroup()
         
-        explanation2 = Text("存在一条直线l，使得过P的任意弦MN的端点", font_size=24)
+        explanation1 = Text("极点极线理论：", font_size=24)
+        left_column.add(explanation1)
+        
+        explanation2 = Text("对于圆锥曲线，给定一点P，", font_size=20)
         explanation2.next_to(explanation1, DOWN, buff=0.2)
+        left_column.add(explanation2)
         
-        explanation3 = Text("M、N处的切线交于l上，这条直线l称为P的极线。", font_size=24)
-        explanation3.next_to(explanation2, DOWN, buff=0.2)
+        explanation3 = Text("存在一条直线l，使得过P的", font_size=20)
+        explanation3.next_to(explanation2, DOWN, buff=0.1)
+        left_column.add(explanation3)
         
-        explanation4 = Text("对于椭圆，点P(x₀,y₀)对应的极线方程为：", font_size=24)
-        explanation4.next_to(explanation3, DOWN, buff=0.3)
+        explanation4 = Text("任意弦MN的端点M、N处", font_size=20)
+        explanation4.next_to(explanation3, DOWN, buff=0.1)
+        left_column.add(explanation4)
         
-        polar_general = MathTex("\\frac{xx_0}{a^2} + \\frac{yy_0}{b^2} = 1", font_size=32)
-        polar_general.next_to(explanation4, DOWN, buff=0.3)
+        explanation5 = Text("的切线交于l上，这条", font_size=20)
+        explanation5.next_to(explanation4, DOWN, buff=0.1)
+        left_column.add(explanation5)
         
-        self.play(Write(explanation1))
-        self.play(Write(explanation2))
-        self.play(Write(explanation3))
-        self.play(Write(explanation4))
-        self.play(Write(polar_general))
-        self.wait(2)
+        explanation6 = Text("直线l称为P的极线。", font_size=20)
+        explanation6.next_to(explanation5, DOWN, buff=0.1)
+        left_column.add(explanation6)
         
-        # 具体计算
-        step1 = Text("对于本题，a²=3，b²=4，P(1,-2)：", font_size=24)
-        step1.next_to(polar_general, DOWN, buff=0.5)
+        explanation7 = Text("对于椭圆，点P(x₀,y₀)", font_size=20)
+        explanation7.next_to(explanation6, DOWN, buff=0.3)
+        left_column.add(explanation7)
         
-        polar_eq = MathTex("\\frac{x \\cdot 1}{3} + \\frac{y \\cdot (-2)}{4} = 1", font_size=32)
-        polar_eq.next_to(step1, DOWN, buff=0.3)
+        explanation8 = Text("对应的极线方程为：", font_size=20)
+        explanation8.next_to(explanation7, DOWN, buff=0.1)
+        left_column.add(explanation8)
         
-        polar_simplified = MathTex("\\frac{x}{3} - \\frac{y}{2} = 1", font_size=32)
+        polar_general = MathTex("\\frac{xx_0}{a^2} + \\frac{yy_0}{b^2} = 1", font_size=28)
+        polar_general.next_to(explanation8, DOWN, buff=0.3)
+        left_column.add(polar_general)
+# 右列 - 具体计算
+        right_column = VGroup()
+        
+        step1 = Text("对于本题：", font_size=24)
+        right_column.add(step1)
+        
+        params = MathTex("a^2 = 3,\\quad b^2 = 4,\\quad P(1,-2)", font_size=28)
+        params.next_to(step1, DOWN, buff=0.3)
+        right_column.add(params)
+        
+        polar_eq = MathTex("\\frac{x \\cdot 1}{3} + \\frac{y \\cdot (-2)}{4} = 1", font_size=28)
+        polar_eq.next_to(params, DOWN, buff=0.3)
+        right_column.add(polar_eq)
+        
+        polar_simplified = MathTex("\\frac{x}{3} - \\frac{y}{2} = 1", font_size=28)
         polar_simplified.next_to(polar_eq, DOWN, buff=0.3)
+        right_column.add(polar_simplified)
         
-        polar_final = MathTex("2x - 3y = 6", font_size=32)
+        polar_final = MathTex("2x - 3y = 6", font_size=28)
         polar_final.next_to(polar_simplified, DOWN, buff=0.3)
+        right_column.add(polar_final)
         
-        conclusion = Text("因此，直线MN恒过该极线与某定直线的交点。", font_size=24)
+        conclusion = Text("因此，直线MN恒过该极线", font_size=20)
         conclusion.next_to(polar_final, DOWN, buff=0.5)
+        right_column.add(conclusion)
         
-        self.play(Write(step1))
-        self.play(Write(polar_eq))
-        self.wait(1)
-        self.play(Write(polar_simplified))
-        self.wait(1)
-        self.play(Write(polar_final))
-        self.wait(1)
-        self.play(Write(conclusion))
+        conclusion2 = Text("与某定直线的交点。", font_size=20)
+        conclusion2.next_to(conclusion, DOWN, buff=0.1)
+        right_column.add(conclusion2)
+        
+        # 定位两列
+        left_column.move_to(LEFT * 3.5)
+        right_column.move_to(RIGHT * 3.5)
+        
+        # 显示左列
+        for obj in left_column:
+            self.play(Write(obj))
+            self.wait(0.3)
+        
+        # 显示右列
+        for obj in right_column:
+            self.play(Write(obj))
+            self.wait(0.3)
+        
         self.wait(2)
-        
-        # 清除文字，重新显示图形
+# 清除文字，重新显示图形
         self.play(*[FadeOut(obj) for obj in self.mobjects])
+        
         # 重新显示坐标系和椭圆
         self.play(Create(self.axes))
         self.play(Create(self.ellipse))
@@ -289,100 +335,74 @@ class EllipseProblem(Scene):
         self.play(Write(method_title))
         self.wait(1)
         
-        # 设直线方程
-        step1 = Text("设过点P(1,-2)的直线方程为：", font_size=24)
-        step1.next_to(method_title, DOWN, buff=0.3)
+        # 左列 - 设直线方程和联立
+        left_column = VGroup()
         
-        line_eq = MathTex("y + 2 = k(x - 1)", font_size=32)
-        line_eq.next_to(step1, DOWN, buff=0.2)
+        step1 = Text("设过点P(1,-2)的", font_size=24)
+        left_column.add(step1)
         
-        line_eq2 = MathTex("y = kx - k - 2", font_size=32)
-        line_eq2.next_to(line_eq, DOWN, buff=0.2)
+        step1_2 = Text("直线方程为：", font_size=24)
+        step1_2.next_to(step1, DOWN, buff=0.1)
+        left_column.add(step1_2)
         
-        self.play(Write(step1))
-        self.play(Write(line_eq))
-        self.wait(1)
-        self.play(Write(line_eq2))
-        self.wait(1)
+        line_eq = MathTex("y + 2 = k(x - 1)", font_size=28)
+        line_eq.next_to(step1_2, DOWN, buff=0.3)
+        left_column.add(line_eq)
         
-        # 联立方程
+        line_eq2 = MathTex("y = kx - k - 2", font_size=28)
+        line_eq2.next_to(line_eq, DOWN, buff=0.3)
+        left_column.add(line_eq2)
+        
         step2 = Text("与椭圆方程联立：", font_size=24)
-        step2.next_to(line_eq2, DOWN, buff=0.3)
+        step2.next_to(line_eq2, DOWN, buff=0.5)
+        left_column.add(step2)
         
-        system_eq = MathTex("\\begin{cases} \\frac{x^2}{3} + \\frac{y^2}{4} = 1 \\\\ y = kx - k - 2 \\end{cases}", font_size=28)
-        system_eq.next_to(step2, DOWN, buff=0.2)
+        system_eq = MathTex("\\begin{cases} \\frac{x^2}{3} + \\frac{y^2}{4} = 1 \\\\ y = kx - k - 2 \\end{cases}", font_size=24)
+        system_eq.next_to(step2, DOWN, buff=0.3)
+        left_column.add(system_eq)
         
-        self.play(Write(step2))
-        self.play(Write(system_eq))
-        self.wait(1)
-        
-        # 代入消元
         step3 = Text("代入消元得：", font_size=24)
-        step3.next_to(system_eq, DOWN, buff=0.3)
+        step3.next_to(system_eq, DOWN, buff=0.5)
+        left_column.add(step3)
         
-        substituted = MathTex("\\frac{x^2}{3} + \\frac{(kx - k - 2)^2}{4} = 1", font_size=28)
-        substituted.next_to(step3, DOWN, buff=0.2)
+        substituted = MathTex("\\frac{x^2}{3} + \\frac{(kx - k - 2)^2}{4} = 1", font_size=24)
+        substituted.next_to(step3, DOWN, buff=0.3)
+        left_column.add(substituted)
         
-        expanded = MathTex("4x^2 + 3(k^2x^2 - 2k(k+2)x + (k+2)^2) = 12", font_size=24)
-        expanded.next_to(substituted, DOWN, buff=0.2)
+        # 右列 - 展开和韦达定理
+        right_column = VGroup()
         
-        final_eq = MathTex("(3k^2+4)x^2 - 6k(k+2)x + 3(k+2)^2 - 12 = 0", font_size=24)
-        final_eq.next_to(expanded, DOWN, buff=0.2)
+        expanded = MathTex("4x^2 + 3(k^2x^2 -", font_size=20)
+        right_column.add(expanded)
         
-        self.play(Write(step3))
-        self.play(Write(substituted))
-        self.wait(1)
-        self.play(Write(expanded))
-        self.wait(1)
-        self.play(Write(final_eq))
-        self.wait(1)
-        # 韦达定理
+        expanded2 = MathTex("2k(k+2)x + (k+2)^2) = 12", font_size=20)
+        expanded2.next_to(expanded, DOWN, buff=0.1)
+        right_column.add(expanded2)
+        
+        final_eq = MathTex("(3k^2+4)x^2 - 6k(k+2)x", font_size=20)
+        final_eq.next_to(expanded2, DOWN, buff=0.3)
+        right_column.add(final_eq)
+        
+        final_eq2 = MathTex("+ 3(k+2)^2 - 12 = 0", font_size=20)
+        final_eq2.next_to(final_eq, DOWN, buff=0.1)
+        right_column.add(final_eq2)
+        
         step4 = Text("由韦达定理：", font_size=24)
-        step4.next_to(final_eq, DOWN, buff=0.3)
+        step4.next_to(final_eq2, DOWN, buff=0.5)
+        right_column.add(step4)
+
+        # 定位两列
+        left_column.move_to(LEFT * 3)
+        right_column.move_to(RIGHT * 3)
         
-        vieta1 = MathTex("x_1 + x_2 = \\frac{6k(k+2)}{3k^2+4}", font_size=24)
-        vieta1.next_to(step4, DOWN, buff=0.2)
+        # 显示左列
+        for obj in left_column:
+            self.play(Write(obj))
+            self.wait(0.3)
         
-        vieta2 = MathTex("x_1x_2 = \\frac{3(k+2)^2-12}{3k^2+4}", font_size=24)
-        vieta2.next_to(vieta1, DOWN, buff=0.2)
+        # 显示右列
+        for obj in right_column:
+            self.play(Write(obj))
+            self.wait(0.3)
         
-        self.play(Write(step4))
-        self.play(Write(vieta1))
-        self.wait(1)
-        self.play(Write(vieta2))
-        self.wait(2)
-        
-        # 求定点
-        step5 = Text("设直线MN过定点(x₀,y₀)，则：", font_size=24)
-        step5.next_to(vieta2, DOWN, buff=0.3)
-        
-        line_through_point = MathTex("\\frac{y_0 + 2}{x_0 - 1} = k", font_size=32)
-        line_through_point.next_to(step5, DOWN, buff=0.2)
-        
-        step6 = Text("由直线MN的性质，代入计算可得：", font_size=24)
-        step6.next_to(line_through_point, DOWN, buff=0.3)
-        
-        fixed_point = MathTex("x_0 = 0, \\quad y_0 = 2", font_size=32)
-        fixed_point.next_to(step6, DOWN, buff=0.2)
-        
-        conclusion = Text("因此，直线MN恒过定点(0,2)", font_size=28, color=YELLOW)
-        conclusion.next_to(fixed_point, DOWN, buff=0.5)
-        
-        self.play(Write(step5))
-        self.play(Write(line_through_point))
-        self.wait(1)
-        self.play(Write(step6))
-        self.play(Write(fixed_point))
-        self.wait(1)
-        self.play(Write(conclusion))
-        self.wait(2)
-        
-        # 清除文字，重新显示图形
-        self.play(*[FadeOut(obj) for obj in self.mobjects])
-        
-        # 重新显示坐标系和椭圆
-        self.play(Create(self.axes))
-        self.play(Create(self.ellipse))
-        self.play(Create(self.point_A), Write(self.label_A))
-        self.play(Create(self.point_B), Write(self.label_B))
-        self.play(Create(self.point_P), Write(self.label_P))
+        self.wait(3)
