@@ -174,11 +174,11 @@ class EllipseProblem(Scene):
         # 清除文字，重新显示图形
         self.play(*[FadeOut(obj) for obj in self.mobjects])
         # 重新显示坐标系和椭圆
-        self.play(Create(self.axes))
-        self.play(Create(self.ellipse))
-        self.play(Create(self.point_A), Write(self.label_A))
-        self.play(Create(self.point_B), Write(self.label_B))
-        self.play(Create(self.point_P), Write(self.label_P))
+        self.play(Create(axes))
+        self.play(Create(ellipse))
+        self.play(Create(point_A), Write(label_A))
+        self.play(Create(point_B), Write(label_B))
+        self.play(Create(point_P), Write(label_P))
         
         # 显示椭圆方程
         eq_text = MathTex("\\frac{x^2}{3} + \\frac{y^2}{4} = 1", font_size=36)
@@ -189,7 +189,7 @@ class EllipseProblem(Scene):
         def polar_line_func(x):
             return (2*x - 6) / 3  # 2x - 3y = 6 => y = (2x - 6)/3
         
-        polar_line = self.axes.plot(
+        polar_line = axes.plot(
             polar_line_func,
             x_range=[-3, 3],
             color=PURPLE,
@@ -305,18 +305,18 @@ class EllipseProblem(Scene):
         self.play(*[FadeOut(obj) for obj in self.mobjects])
         
         # 重新显示坐标系和椭圆
-        self.play(Create(self.axes))
-        self.play(Create(self.ellipse))
-        self.play(Create(self.point_A), Write(self.label_A))
-        self.play(Create(self.point_B), Write(self.label_B))
-        self.play(Create(self.point_P), Write(self.label_P))
+        self.play(Create(axes))
+        self.play(Create(ellipse))
+        self.play(Create(point_A), Write(label_A))
+        self.play(Create(point_B), Write(label_B))
+        self.play(Create(point_P), Write(label_P))
         # 显示椭圆方程
         eq_text = MathTex("\\frac{x^2}{3} + \\frac{y^2}{4} = 1", font_size=36)
         eq_text.to_corner(UL)
         self.play(Write(eq_text))
         
         # 显示定点
-        fixed_point_dot = Dot(self.axes.coords_to_point(0, 2), color=YELLOW, radius=0.1)
+        fixed_point_dot = Dot(axes.coords_to_point(0, 2), color=YELLOW, radius=0.1)
         fixed_label = Text("(0,2)", font_size=24).next_to(fixed_point_dot, UP)
         
         self.play(Create(fixed_point_dot), Write(fixed_label))
@@ -326,7 +326,7 @@ class EllipseProblem(Scene):
         
         for k in k_values:
             line_func = lambda x, k=k: k * x - k - 2
-            line = self.axes.plot(
+            line = axes.plot(
                 line_func,
                 x_range=[-3, 3],
                 color=BLUE,
