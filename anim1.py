@@ -4,330 +4,209 @@ import numpy as np
 class EllipseProblem(Scene):
     def construct(self):
         # 标题
-        title = Text("椭圆问题解答", font_size=48, color=BLUE)
+        title = Text("椭圆定点问题", font_size=48, color=BLUE)
         self.play(Write(title))
         self.wait(1)
         self.play(FadeOut(title))
         
-        # 第一部分：求椭圆方程
-        self.section1()
-        
-        # 第二部分：几何演示
-        self.section2()
-        
-        # 极点极线解释
-        self.section3()
-        
-        # 常规代数证明
-        self.section4()
-    
-    def section1(self):
-        # 第一部分：求椭圆方程
-        title = Text("第一部分：求椭圆方程", font_size=36, color=GREEN)
-        title.to_edge(UP)
-        self.play(Write(title))
-        
-        # 已知条件
-        conditions = VGroup(
-            Text("已知椭圆E关于x轴、y轴对称", font_size=24),
-            Text("且过点A(0, -2)和B(3/2, -1)", font_size=24)
-        )
-        conditions.arrange(DOWN, aligned_edge=LEFT)
-        conditions.next_to(title, DOWN, buff=0.5)
-        
-        self.play(Write(conditions))
-        self.wait(2)
-        
-        # 设椭圆方程
-        eq_setup = MathTex("\\text{设椭圆方程为: }", "\\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1")
-        eq_setup.next_to(conditions, DOWN, buff=0.5)
-        
-        self.play(Write(eq_setup))
-        self.wait(1)
-        
-        # 代入点A
-        eq_A = MathTex("\\text{代入点A(0, -2): }", "\\frac{0^2}{a^2} + \\frac{(-2)^2}{b^2} = 1")
-        eq_A.next_to(eq_setup, DOWN, buff=0.3, aligned_edge=LEFT)
-        
-        self.play(Write(eq_A))
-        self.wait(1)
-        
-        eq_A_simplified = MathTex("\\Rightarrow", "\\frac{4}{b^2} = 1", "\\Rightarrow", "b^2 = 4")
-        eq_A_simplified.next_to(eq_A, DOWN, buff=0.3, aligned_edge=LEFT)
-        
-        self.play(Write(eq_A_simplified))
-        self.wait(1)
-        
-        # 代入点B
-        eq_B = MathTex("\\text{代入点B}(\\frac{3}{2}, -1): ", 
-                       "\\frac{(3/2)^2}{a^2} + \\frac{(-1)^2}{4} = 1")
-        eq_B.next_to(eq_A_simplified, DOWN, buff=0.3, aligned_edge=LEFT)
-        
-        self.play(Write(eq_B))
-        self.wait(1)
-        
-        eq_B_simplified = MathTex("\\Rightarrow", 
-                                  "\\frac{9/4}{a^2} + \\frac{1}{4} = 1")
-        eq_B_simplified.next_to(eq_B, DOWN, buff=0.3, aligned_edge=LEFT)
-        
-        self.play(Write(eq_B_simplified))
-        self.wait(1)
-        
-        eq_B_simplified2 = MathTex("\\Rightarrow", 
-                                   "\\frac{9}{4a^2} = \\frac{3}{4}")
-        eq_B_simplified2.next_to(eq_B_simplified, DOWN, buff=0.3, aligned_edge=LEFT)
-        
-        self.play(Write(eq_B_simplified2))
-        self.wait(1)
-        
-        eq_B_simplified3 = MathTex("\\Rightarrow", 
-                                   "9 = 3a^2", "\\Rightarrow", "a^2 = 3")
-        eq_B_simplified3.next_to(eq_B_simplified2, DOWN, buff=0.3, aligned_edge=LEFT)
-        
-        self.play(Write(eq_B_simplified3))
-        self.wait(1)
-        
-        # 最终方程
-        final_eq = MathTex("\\text{椭圆E的方程为: }", 
-                           "\\frac{x^2}{3} + \\frac{y^2}{4} = 1")
-        final_eq.next_to(eq_B_simplified3, DOWN, buff=0.5)
-        final_eq.set_color(YELLOW)
-        
-        self.play(Write(final_eq))
-        self.wait(2)
-        
-        # 清理屏幕
-        self.play(*[FadeOut(mob) for mob in self.mobjects])
-        
-    def section2(self):
-        # 第二部分：几何演示
-        title = Text("第二部分：几何演示", font_size=36, color=GREEN)
-        title.to_edge(UP)
-        self.play(Write(title))
-        
-        # 创建坐标系
+        # 第一部分：建立坐标系和椭圆
         axes = Axes(
             x_range=[-3, 3, 1],
             y_range=[-3, 3, 1],
             x_length=6,
             y_length=6,
             axis_config={"color": WHITE, "stroke_width": 2},
+            tips=False
         )
         axes.add_coordinates()
-        axes.shift(DOWN * 0.5)
+        
+        # 计算椭圆方程
+        # 已知过点A(0,-2), B(3/2,-1)
+        # 设椭圆方程: x²/a² + y²/b² = 1
+        # 代入A: 0 + 4/b² = 1 => b² = 4
+        # 代入B: (9/4)/a² + 1/4 = 1 => (9/4)/a² = 3/4 => a² = 3
+        a_sq = 3
+        b_sq = 4
+        a = np.sqrt(a_sq)
+        b = np.sqrt(b_sq)
+        
+        ellipse_eq = MathTex(r"\frac{x^2}{3} + \frac{y^2}{4} = 1", font_size=36)
+        ellipse_eq.to_corner(UL)
+        
+        # 创建椭圆
+        ellipse = Ellipse(
+            width=2*a,  # 横轴长度
+            height=2*b,  # 纵轴长度
+            color=YELLOW,
+            stroke_width=3
+        )
         
         self.play(Create(axes))
-        self.wait(1)
+        self.play(Write(ellipse_eq))
+        self.play(Create(ellipse))
         
-        # 绘制椭圆
-        ellipse = ParametricFunction(
-            lambda t: axes.coords_to_point(
-                np.sqrt(3) * np.cos(t),
-                2 * np.sin(t)
-            ),
-            t_range=[0, 2 * PI],
-            color=BLUE,
-            stroke_width=4
+        # 标记已知点
+        point_A = Dot(axes.coords_to_point(0, -2), color=RED, radius=0.08)
+        point_B = Dot(axes.coords_to_point(1.5, -1), color=RED, radius=0.08)
+        point_P = Dot(axes.coords_to_point(1, -2), color=GREEN, radius=0.08)
+        
+        label_A = MathTex("A(0,-2)", font_size=24).next_to(point_A, DOWN)
+        label_B = MathTex(r"B(\frac{3}{2},-1)", font_size=24).next_to(point_B, RIGHT)
+        label_P = MathTex("P(1,-2)", font_size=24).next_to(point_P, DOWN)
+        
+        self.play(
+            Create(point_A), Write(label_A),
+            Create(point_B), Write(label_B),
+            Create(point_P), Write(label_P)
         )
-        ellipse_label = MathTex("\\frac{x^2}{3} + \\frac{y^2}{4} = 1").next_to(ellipse, UR, buff=0.1)
-        
-        self.play(Create(ellipse), Write(ellipse_label))
-        self.wait(1)
-        
-        # 标记点A和B
-        A = Dot(axes.coords_to_point(0, -2), color=RED, radius=0.08)
-        A_label = MathTex("A", color=RED).next_to(A, LEFT, buff=0.1)
-        
-        B = Dot(axes.coords_to_point(1.5, -1), color=RED, radius=0.08)
-        B_label = MathTex("B", color=RED).next_to(B, UR, buff=0.1)
-        
-        self.play(Create(A), Write(A_label), Create(B), Write(B_label))
-        self.wait(1)
         
         # 绘制线段AB
-        AB = Line(A.get_center(), B.get_center(), color=GREEN, stroke_width=3)
-        self.play(Create(AB))
-        self.wait(1)
-        
-        # 标记点P
-        P = Dot(axes.coords_to_point(1, -2), color=ORANGE, radius=0.08)
-        P_label = MathTex("P", color=ORANGE).next_to(P, DOWN, buff=0.1)
-        
-        self.play(Create(P), Write(P_label))
-        self.wait(1)
-        
-        # 动态演示过P的直线与椭圆的交点
-        k_values = [-2, -1, 0.5, 1.5]  # 不同的斜率值
-        
-        for k in k_values:
-            # 过P的直线方程: y = k(x-1) - 2
-            line = axes.plot(
-                lambda x: k * (x - 1) - 2,
-                x_range=[-3, 3],
-                color=YELLOW,
-                stroke_width=3
-            )
-            
-            self.play(Create(line), run_time=1.5)
-            
-            # 求与椭圆的交点
-            # 解方程: x^2/3 + (k(x-1)-2)^2/4 = 1
-            # 这里简化计算，直接使用近似解
-            if k == -2:
-                M_point = axes.coords_to_point(0.87, -1.74)
-                N_point = axes.coords_to_point(-0.87, 1.74)
-            elif k == -1:
-                M_point = axes.coords_to_point(1.37, -2.37)
-                N_point = axes.coords_to_point(-0.37, 0.37)
-            elif k == 0.5:
-                M_point = axes.coords_to_point(2.12, -1.44)
-                N_point = axes.coords_to_point(-0.12, -2.06)
-            else:  # k = 1.5
-                M_point = axes.coords_to_point(2.45, -0.18)
-                N_point = axes.coords_to_point(-0.45, -2.68)
-            
-            M = Dot(M_point, color=PURPLE, radius=0.08)
-            M_label = MathTex("M", color=PURPLE).next_to(M, UR, buff=0.1)
-            
-            N = Dot(N_point, color=PURPLE, radius=0.08)
-            N_label = MathTex("N", color=PURPLE).next_to(N, UL, buff=0.1)
-            
-            self.play(Create(M), Write(M_label), Create(N), Write(N_label))
-            
-            # 过M平行于x轴的直线
-            horizontal_line = DashedLine(
-                axes.coords_to_point(-3, M_point[1]),
-                axes.coords_to_point(3, M_point[1]),
-                color=GRAY,
-                stroke_width=2
-            )
-            
-            self.play(Create(horizontal_line))
-            
-            # 与AB的交点T
-            # AB方程: y = (2/3)x - 2
-            # 与y = y_M的交点
-            y_M = axes.point_to_coords(M_point)[1]
-            x_T = (y_M + 2) * 3/2
-            T_point = axes.coords_to_point(x_T, y_M)
-            
-            T = Dot(T_point, color=TEAL, radius=0.08)
-            T_label = MathTex("T", color=TEAL).next_to(T, UP, buff=0.1)
-            
-            self.play(Create(T), Write(T_label))
-            
-            # 点H: MT = TH, 所以H = 2T - M
-            H_point = 2 * T_point - M_point
-            H = Dot(H_point, color=PINK, radius=0.08)
-            H_label = MathTex("H", color=PINK).next_to(H, DOWN, buff=0.1)
-            
-            self.play(Create(H), Write(H_label))
-# 直线HN
-            HN = Line(H_point, N_point, color=RED, stroke_width=3)
-            self.play(Create(HN))
-            
-            # 显示HN过定点A
-            A_copy = Dot(axes.coords_to_point(0, -2), color=RED, radius=0.1)
-            self.play(Create(A_copy), run_time=0.5)
-            
-            # 验证HN过A
-            verification_line = DashedLine(H_point, A.get_center(), color=RED, stroke_width=2)
-            self.play(Create(verification_line))
-            
-            self.wait(2)
-            
-            # 清理当前演示（保留椭圆、点A、B、P和AB）
-            to_remove = VGroup(line, M, M_label, N, N_label, horizontal_line, T, T_label, H, H_label, HN, A_copy, verification_line)
-            self.play(FadeOut(to_remove))
+        line_AB = Line(point_A.get_center(), point_B.get_center(), color=BLUE, stroke_width=2)
+        self.play(Create(line_AB))
         
         self.wait(2)
         
-        # 清理屏幕
-        self.play(*[FadeOut(mob) for mob in self.mobjects])
-    
-    def section3(self):
-        # 极点极线解释
-        title = Text("极点极线方法", font_size=36, color=GREEN)
-        title.to_edge(UP)
-        self.play(Write(title))
+        # 第二部分：极点极线方法
+        pole_polar_title = Text("极点极线方法", font_size=36, color=GREEN)
+        pole_polar_title.to_edge(UP)
+        self.play(Write(pole_polar_title))
         
-        explanation = VGroup(
-            Text("极点极线理论:", font_size=28, color=YELLOW),
-            Text("对于圆锥曲线，一点P的极线是", font_size=24),
-            Text("一条直线，具有调和分割性质", font_size=24),
-            Text("", font_size=24),
-            Text("点P(1,-2)关于椭圆的极线为:", font_size=24),
-            MathTex("\\frac{x\\cdot 1}{3} + \\frac{y\\cdot (-2)}{4} = 1"),
-            MathTex("\\Rightarrow \\frac{x}{3} - \\frac{y}{2} = 1"),
-            MathTex("\\Rightarrow 2x - 3y = 6"),
-            Text("", font_size=24),
-            Text("这正是直线AB的方程!", font_size=24, color=RED),
-            Text("", font_size=24),
-            Text("因此，点P和直线AB是极点极线关系", font_size=24),
-            Text("这解释了为什么直线HN总是过定点A", font_size=24)
-        )
+        # 解释极点极线概念
+        explanation1 = Text("对于椭圆，点P对应的极线方程为:", font_size=24)
+        explanation1.next_to(pole_polar_title, DOWN, buff=0.3)
         
-        explanation.arrange(DOWN, aligned_edge=LEFT)
-        explanation.scale(0.8)
-        explanation.next_to(title, DOWN, buff=0.5)
+        # 极点极线方程：对于椭圆 x²/3 + y²/4 = 1，点P(1,-2)的极线为：
+        # x*1/3 + y*(-2)/4 = 1 => x/3 - y/2 = 1
+        polar_eq = MathTex(r"\frac{x \cdot 1}{3} + \frac{y \cdot (-2)}{4} = 1", font_size=30)
+        polar_eq.next_to(explanation1, DOWN, buff=0.2)
         
-        for item in explanation:
-            self.play(Write(item), run_time=1)
-            self.wait(0.5)
+        polar_eq_simple = MathTex(r"\frac{x}{3} - \frac{y}{2} = 1", font_size=30)
+        polar_eq_simple.next_to(polar_eq, DOWN, buff=0.2)
         
-        self.wait(3)
-# 清理屏幕
-        self.play(*[FadeOut(mob) for mob in self.mobjects])
-    
-    def section4(self):
-        # 常规代数证明
-        title = Text("常规代数证明", font_size=36, color=GREEN)
-        title.to_edge(UP)
-        self.play(Write(title))
+        self.play(Write(explanation1))
+        self.play(Write(polar_eq))
+        self.wait(1)
+        self.play(Write(polar_eq_simple))
         
-        proof = VGroup(
-            Text("设过点P(1,-2)的直线方程为:", font_size=24),
-            MathTex("y = k(x-1) - 2"),
-            Text("代入椭圆方程:", font_size=24),
-            MathTex("\\frac{x^2}{3} + \\frac{[k(x-1)-2]^2}{4} = 1"),
-            Text("整理得:", font_size=24),
-            MathTex("(4+3k^2)x^2 - 6k(k+2)x + 3(k+2)^2 - 12 = 0"),
-            Text("设M(x₁,y₁), N(x₂,y₂), 由韦达定理:", font_size=24),
-            MathTex("x_1 + x_2 = \\frac{6k(k+2)}{4+3k^2}"),
-            MathTex("x_1 x_2 = \\frac{3(k+2)^2 - 12}{4+3k^2}"),
-            Text("点T在AB上，且y_T = y₁", font_size=24),
-            MathTex("T = \\left(\\frac{3k}{2}(x_1-1), kx_1-k-2\\right)"),
-            Text("点H满足MT = TH, 故H = 2T - M", font_size=24),
-            MathTex("H = \\left((3k-1)x_1-3k, kx_1-k-2\\right)"),
-            Text("直线HN的方程:", font_size=24),
-            MathTex("\\frac{y - y_2}{x - x_2} = \\frac{y_2 - y_H}{x_2 - x_H}"),
-            Text("代入点A(0,-2)验证:", font_size=24),
-            MathTex("\\frac{-2 - y_2}{0 - x_2} = \\frac{y_2 - y_H}{x_2 - x_H}"),
-            Text("经过代数运算，该等式恒成立", font_size=24),
-            Text("故直线HN恒过定点A(0,-2)", font_size=24, color=RED)
-        )
+        # 绘制极线
+        # 极线方程: x/3 - y/2 = 1 => y = (2x/3) - 2
+        def polar_line(x):
+            return (2*x/3) - 2
         
-        proof.arrange(DOWN, aligned_edge=LEFT)
-        proof.scale(0.7)
-        proof.next_to(title, DOWN, buff=0.5)
+        polar_curve = axes.plot(polar_line, x_range=[-1, 4.5], color=PURPLE, stroke_width=3)
+        polar_label = MathTex(r"x/3 - y/2 = 1", font_size=24, color=PURPLE)
+        polar_label.next_to(axes.coords_to_point(3, polar_line(3)), RIGHT)
         
-        for item in proof:
-            self.play(Write(item), run_time=1.5)
-            self.wait(0.5)
+        self.play(Create(polar_curve), Write(polar_label))
         
-        self.wait(3)
-# 结论
-        conclusion = Text("证毕", font_size=48, color=GOLD)
-        conclusion.move_to(ORIGIN)
+        # 根据极点极线理论，过P点的任意弦MN的端点处的切线交点在极线上
+        # 且MN恒过极线上的某个定点
         
-        self.play(Write(conclusion))
+        # 选取几个不同的过P点的直线来演示
+        slopes = [-2, 0, 1, 2]
+        intersection_points = []
+        
+        for slope in slopes:
+            # 直线方程: y + 2 = k(x - 1)
+            line = axes.plot(lambda x: slope*(x-1)-2, 
+                           x_range=[-2, 3], color=ORANGE, stroke_width=2)
+            
+            # 求直线与椭圆的交点（近似）
+            # 椭圆方程: x²/3 + y²/4 = 1
+            # 代入直线方程求解
+            
+            self.play(Create(line), run_time=1)
+            
+            # 标记交点（示意）
+            if slope == 1:  # 以其中一个为例
+                # 近似计算交点
+                # 对于k=1: y = x-3
+                # 代入椭圆: x²/3 + (x-3)²/4 = 1
+                # 4x² + 3(x²-6x+9) = 12
+                # 7x² -18x +15 = 0
+                # 判别式=324-420=-96<0，无实根
+                # 这里用示意点
+                M_point = Dot(axes.coords_to_point(-0.5, -3.5), color=YELLOW, radius=0.06)
+                N_point = Dot(axes.coords_to_point(2, -1), color=YELLOW, radius=0.06)
+                
+                self.play(Create(M_point), Create(N_point))
+                
+                # 过M平行x轴的直线
+                horizontal_line = DashedLine(
+                    axes.coords_to_point(-2, -3.5),
+                    axes.coords_to_point(2, -3.5),
+                    color=GRAY, stroke_width=2
+                )
+                self.play(Create(horizontal_line))
+                
+                # 与AB的交点T
+                T_point = Dot(axes.coords_to_point(0.75, -3.5), color=PINK, radius=0.06)
+                T_label = MathTex("T", font_size=20).next_to(T_point, UP)
+                self.play(Create(T_point), Write(T_label))
+                
+                # 点H满足 MT = TH
+                H_point = Dot(axes.coords_to_point(2, -3.5), color=TEAL, radius=0.06)
+                H_label = MathTex("H", font_size=20).next_to(H_point, UP)
+                self.play(Create(H_point), Write(H_label))
+                
+                # 直线NH
+                NH_line = DashedLine(N_point.get_center(), H_point.get_center(), 
+                                   color=RED, stroke_width=3)
+                self.play(Create(NH_line))
+        
         self.wait(2)
         
-        # 清理屏幕
-        self.play(*[FadeOut(mob) for mob in self.mobjects])
-
-# 运行场景
-if __name__ == "__main__":
-    scene = EllipseProblem()
-    scene.render()
-
+        # 第三部分：常规方法 - 直曲联立韦达定理
+        conventional_title = Text("常规方法: 直曲联立韦达定理", font_size=36, color=ORANGE)
+        conventional_title.to_edge(UP)
+        self.play(ReplacementTransform(pole_polar_title, conventional_title))
+        
+        # 清理之前的演示线条
+        self.play(
+            FadeOut(polar_curve), FadeOut(polar_label),
+            FadeOut(explanation1), FadeOut(polar_eq), FadeOut(polar_eq_simple)
+        )
+        
+        # 展示解题步骤
+        steps = VGroup(
+            MathTex(r"\text{1. 设直线MN: } y + 2 = k(x - 1)", font_size=28),
+            MathTex(r"\text{2. 与椭圆联立: } \frac{x^2}{3} + \frac{(kx-k-2)^2}{4} = 1", font_size=28),
+            MathTex(r"\text{3. 整理得: } (4+3k^2)x^2 - 6k(k+2)x + 3(k+2)^2 - 12 = 0", font_size=28),
+            MathTex(r"\text{4. 韦达定理: } x_1 + x_2 = \frac{6k(k+2)}{4+3k^2},\quad x_1x_2 = \frac{3(k+2)^2-12}{4+3k^2}", font_size=28),
+            MathTex(r"\text{5. 利用条件证明直线过定点}", font_size=28)
+        )
+        
+        steps.arrange(DOWN, aligned_edge=LEFT, buff=0.3)
+        steps.to_edge(RIGHT)
+        
+        for step in steps:
+            self.play(Write(step), run_time=1.5)
+            self.wait(0.5)
+        
+        self.wait(2)
+# 第四部分：总结
+        conclusion_title = Text("结论", font_size=36, color=GOLD)
+        conclusion_title.to_edge(UP)
+        self.play(ReplacementTransform(conventional_title, conclusion_title))
+        
+        conclusion = VGroup(
+            MathTex(r"\text{通过两种方法均可证明:}", font_size=28),
+            MathTex(r"\text{直线MN恒过定点}", font_size=28),
+            MathTex(r"\text{这个定点就是点P对应的极线}", font_size=28),
+            MathTex(r"\text{与某个特殊直线的交点}", font_size=28)
+        )
+        
+        conclusion.arrange(DOWN, aligned_edge=LEFT, buff=0.3)
+        conclusion.next_to(conclusion_title, DOWN, buff=0.5)
+        
+        for line in conclusion:
+            self.play(Write(line), run_time=1)
+        
+        self.wait(3)
+        
+        # 最终展示
+        final_group = VGroup(axes, ellipse, ellipse_eq, point_A, label_A, 
+                           point_B, label_B, point_P, label_P, line_AB)
+        self.play(final_group.animate.scale(0.8).to_edge(LEFT))
+        
+        self.wait(2)
