@@ -136,7 +136,7 @@ class EllipseProblem(Scene):
         right_column.add(step3)
         
         eq_B = MathTex("\\frac{(3/2)^2}{a^2} + \\frac{(-1)^2}{4} = 1", font_size=32)
-        eq_B.next_to%(step3, DOWN, buff=0.3)
+        eq_B.next_to(step3, DOWN, buff=0.3)
         right_column.add(eq_B)
         
         eq_B_simplified = MathTex("\\frac{9/4}{a^2} + \\frac{1}{4} = 1", font_size=32)
