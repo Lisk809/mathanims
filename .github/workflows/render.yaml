@@ -26,9 +26,6 @@ jobs:
         sudo apt-get install -y \
           ffmpeg \
           texlive \
-          texlive-xetex\
-          texlive-lang-chinese\
-          fonts-noto-cjk\
           texlive-latex-extra \
           texlive-fonts-extra \
           texlive-latex-recommended \
