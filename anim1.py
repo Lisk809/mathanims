@@ -171,11 +171,15 @@ class EllipseProblem(Scene):
         
         # 展示解题步骤
         steps = VGroup(
-            MathTex(r"\text{1. 设直线MN: } y + 2 = k(x - 1)", font_size=28),
-            MathTex(r"\text{2. 与椭圆联立: } \frac{x^2}{3} + \frac{(kx-k-2)^2}{4} = 1", font_size=28),
-            MathTex(r"\text{3. 整理得: } (4+3k^2)x^2 - 6k(k+2)x + 3(k+2)^2 - 12 = 0", font_size=28),
-            MathTex(r"\text{4. 韦达定理: } x_1 + x_2 = \frac{6k(k+2)}{4+3k^2},\quad x_1x_2 = \frac{3(k+2)^2-12}{4+3k^2}", font_size=28),
-            MathTex(r"\text{5. 利用条件证明直线过定点}", font_size=28)
+            Text("设直线MN方程", font_size=28),
+            MathTex(r"y + 2 = k(x - 1)", font_size=28),
+            Text("与椭圆联立", font_size=28),
+            MathTex(r"\frac{x^2}{3} + \frac{(kx-k-2)^2}{4} = 1", font_size=28),
+            Text("整理得: ", font_size=28),
+            MathTex(r"(4+3k^2)x^2 - 6k(k+2)x + 3(k+2)^2 - 12 = 0", font_size=28),
+            Text("由韦达定理: ", font_size=28),
+            MathTex(r"x_1 + x_2 = \frac{6k(k+2)}{4+3k^2},\quad x_1x_2 = \frac{3(k+2)^2-12}{4+3k^2}", font_size=28),
+            Text(r"利用条件证明直线过定点", font_size=28)
         )
         
         steps.arrange(DOWN, aligned_edge=LEFT, buff=0.3)
@@ -192,10 +196,10 @@ class EllipseProblem(Scene):
         self.play(ReplacementTransform(conventional_title, conclusion_title))
         
         conclusion = VGroup(
-            MathTex(r"\text{通过两种方法均可证明:}", font_size=28),
-            MathTex(r"\text{直线MN恒过定点}", font_size=28),
-            MathTex(r"\text{这个定点就是点P对应的极线}", font_size=28),
-            MathTex(r"\text{与某个特殊直线的交点}", font_size=28)
+            Text(r"通过两种方法均可证明:", font_size=28),
+            Text(r"直线MN恒过定点", font_size=28),
+            Text(r"这个定点就是点P对应的极线", font_size=28),
+            Text(r"与某个特殊直线的交点", font_size=28)
         )
         
         conclusion.arrange(DOWN, aligned_edge=LEFT, buff=0.3)
