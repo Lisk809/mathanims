@@ -19,7 +19,7 @@ class EllipseProblem(Scene):
         self.conventional_method()
         
         # 最终总结
-        self.final_summary()
+        #self.final_summary()
         
     def setup_coordinate_system(self):
         # 步骤标题
