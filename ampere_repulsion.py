@@ -1,359 +1,298 @@
 from manim import *
 import numpy as np
 
-class AmpereForce(ThreeDScene):
+class AmpereForce(Scene):
     def construct(self):
-        # 设置3D视角
-        self.set_camera_orientation(phi=75 * DEGREES, theta=45 * DEGREES)
-        
         # 标题
-        title = Text("安培力：条形磁铁与通电线圈", font_size=36)
+        title = Text("安培力：条形磁铁与通电线圈", font_size=36, color=BLUE)
         title.to_edge(UP)
         self.play(Write(title))
         self.wait(1)
         
+        # 创建坐标系
+        axes = Axes(
+            x_range=[-8, 8, 1],
+            y_range=[-5, 5, 1],
+            x_length=16,
+            y_length=10,
+            axis_config={"color": WHITE, "stroke_width": 1},
+            tips=False
+        )
+        axes.shift(DOWN * 0.5)
+        
         # 创建条形磁铁
-        magnet = VGroup(
-            Prism(dimensions=[1, 0.3, 0.3], fill_color=RED, stroke_color=RED_E, fill_opacity=0.8),  # N极
-            Prism(dimensions=[1, 0.3, 0.3], fill_color=BLUE, stroke_color=BLUE_E, fill_opacity=0.8)  # S极
-        ).arrange(RIGHT, buff=0)
+        magnet_height = 3.0
+        magnet_width = 1.0
+        magnet = Rectangle(
+            height=magnet_height,
+            width=magnet_width,
+            fill_color=RED,
+            fill_opacity=0.8,
+            stroke_color=WHITE,
+            stroke_width=2
+        )
+        magnet.move_to(LEFT * 5)
         
-        # 标记磁极
-        n_label = Text("N", font_size=24, color=WHITE).next_to(magnet[0], UP, buff=0.1)
-        s_label = Text("S", font_size=24, color=WHITE).next_to(magnet[1], UP, buff=0.1)
-        
-        magnet_group = VGroup(magnet, n_label, s_label)
-        magnet_group.move_to(ORIGIN)
+        # 磁极标签
+        n_label = Text("N", font_size=24, color=WHITE).next_to(magnet, UP, buff=0.2)
+        s_label = Text("S", font_size=24, color=WHITE).next_to(magnet, DOWN, buff=0.2)
         
         # 创建通电线圈
-        coil = self.create_coil(radius=0.8, turns=3, height=0.2)
-        coil.move_to(ORIGIN + 2*RIGHT + 0.5*UP)
-        coil.set_color(YELLOW)
+        coil_radius = 1.2
+        coil = Circle(radius=coil_radius, color=YELLOW, stroke_width=4)
+        coil.move_to(RIGHT * 3)
         
         # 电流方向指示
-        current_arrow = Arrow(
-            start=coil.get_center() + 0.5*LEFT,
-            end=coil.get_center() + 0.5*RIGHT,
-            color=GREEN,
-            buff=0.1,
-            stroke_width=5
+        current_dots = VGroup()
+        current_arrows = VGroup()
+        for angle in np.linspace(0, 2*PI, 12, endpoint=False):
+            dot = Dot(radius=0.05, color=YELLOW)
+            dot.move_to(coil.point_at_angle(angle))
+            
+            arrow = Arrow(
+                start=coil.point_at_angle(angle + 0.1),
+                end=coil.point_at_angle(angle - 0.1),
+                color=YELLOW,
+                stroke_width=3,
+                max_tip_length_to_length_ratio=0.2
+            )
+            
+            current_dots.add(dot)
+            current_arrows.add(arrow)
+        
+        self.play(
+            Create(magnet),
+            Write(n_label),
+            Write(s_label),
+            Create(coil),
+            Create(current_dots),
+            Create(current_arrows)
         )
-        current_label = Text("I", font_size=20, color=GREEN).next_to(current_arrow, UP, buff=0.1)
-        # 显示磁铁和线圈
-        self.play(Create(magnet), Write(n_label), Write(s_label))
-        self.play(Create(coil), GrowArrow(current_arrow), Write(current_label))
         self.wait(2)
+        
+        # 显示电流方向文字
+        current_text = Text("电流方向: 逆时针", font_size=20, color=YELLOW)
+        current_text.next_to(coil, DOWN, buff=0.5)
+        self.play(Write(current_text))
+        self.wait(1)
+        
+        # 第一部分：绘制磁感线
+        section1 = Text("1. 磁铁的磁场分布", font_size=28, color=GREEN)
+        section1.next_to(title, DOWN, buff=0.5)
+        self.play(Write(section1))
+        self.wait(1)
         
         # 绘制磁感线
-        magnetic_field_lines = self.create_magnetic_field_lines(magnet)
-        self.play(Create(magnetic_field_lines), run_time=3)
-        
-        # 显示安培力方向
-        force_arrow = Arrow(
-            start=coil.get_center(),
-            end=coil.get_center() + 1.5*RIGHT,
-            color=ORANGE,
-            buff=0.1,
-            stroke_width=8
-        )
-        force_label = Text("F", font_size=24, color=ORANGE).next_to(force_arrow, RIGHT, buff=0.1)
-        
-        self.play(GrowArrow(force_arrow), Write(force_label))
-        
-        explanation = Text("通电线圈在磁场中受到安培斥力", font_size=24, color=WHITE)
-        explanation.to_edge(DOWN)
-        self.play(Write(explanation))
+        field_lines = self.create_magnetic_field_lines(magnet, coil)
+        self.play(LaggedStartMap(Create, field_lines, lag_ratio=0.1), run_time=3)
         self.wait(2)
         
-        # 清除当前场景，准备微分分析
-        self.play(
-            FadeOut(title),
-            FadeOut(explanation),
-            FadeOut(force_arrow),
-            FadeOut(force_label),
-            FadeOut(current_arrow),
-            FadeOut(current_label),
-            FadeOut(magnetic_field_lines)
-        )
+        # 第二部分：微分分析
+        self.play(FadeOut(section1))
+        section2 = Text("2. 微分分析：单条磁感线的作用", font_size=28, color=GREEN)
+        section2.next_to(title, DOWN, buff=0.5)
+        self.play(Write(section2))
+        self.wait(1)
         
-        # 放大分析一条磁感线
-        self.zoom_in_magnetic_field_analysis(magnet, coil)
+        # 放大显示一条磁感线
+        self.show_single_field_line_analysis(magnet, coil, field_lines[5])
+        self.wait(2)
         
-        # 回到整体计算合力
-        self.overall_force_calculation(magnet, coil)
+        # 第三部分：合力计算
+        self.play(FadeOut(section2))
+        section3 = Text("3. 合力计算：所有微分力的矢量和", font_size=28, color=GREEN)
+        section3.next_to(title, DOWN, buff=0.5)
+        self.play(Write(section3))
+        self.wait(1)
         
-    def create_coil(self, radius=1, turns=4, height=0.5):
-        """创建3D线圈"""
-        coil = VGroup()
+        # 显示合力效果
+        self.show_net_force_effect(magnet, coil)
+        self.wait(2)
         
-        for i in range(turns):
-            angle = i * 2 * PI / turns
-            next_angle = (i + 1) * 2 * PI / turns
-            
-            # 创建螺旋线
-            helix = ParametricFunction(
-                lambda t: np.array([
-                    radius * np.cos(angle + t * (next_angle - angle)),
-                    radius * np.sin(angle + t * (next_angle - angle)),
-                    height * t - height/2
-                ]),
-                t_range=[0, 1],
-                color=YELLOW,
-                stroke_width=4
-            )
-            coil.add(helix)
-        
-        return coil
+        # 结论
+        conclusion = Text("结论：线圈受到向左的安培斥力", font_size=24, color=RED)
+        conclusion.next_to(section3, DOWN, buff=0.5)
+        self.play(Write(conclusion))
+        self.wait(3)
     
-    def create_magnetic_field_lines(self, magnet):
+    def create_magnetic_field_lines(self, magnet, coil):
         """创建磁感线"""
-        field_lines = VGroup()
+        lines = VGroup()
         
         # N极发出的磁感线
-        for i in range(8):
-            angle = i * 2 * PI / 8
-            start_point = magnet[0].get_center() + 0.3 * np.array([np.cos(angle), np.sin(angle), 0])
-            # 创建弯曲的磁感线
-            field_line = ParametricFunction(
-                lambda t: self.magnetic_field_equation(t, angle),
-                t_range=[0, 2],
-                color=RED,
-                stroke_width=2
-            )
-            field_lines.add(field_line)
+        n_center = magnet.get_center() + UP * magnet.height/2
+        s_center = magnet.get_center() + DOWN * magnet.height/2
         
-        # S极进入的磁感线
-        for i in range(8):
-            angle = i * 2 * PI / 8
-            end_point = magnet[1].get_center() + 0.3 * np.array([np.cos(angle), np.sin(angle), 0])
+        # 创建多条磁感线
+        for i, angle in enumerate(np.linspace(-PI/2, PI/2, 8)):
+            # 从N极出发的曲线
+            start_point = n_center + RIGHT * 0.5 * np.sin(angle)
             
-            # 创建弯曲的磁感线
-            field_line = ParametricFunction(
-                lambda t: self.magnetic_field_equation(t, angle, reverse=True),
-                t_range=[0, 2],
+            # 控制点使曲线更自然
+            control1 = start_point + RIGHT * 2 + UP * 0.5
+            control2 = start_point + RIGHT * 4 + DOWN * 0.5 * np.sin(angle)
+            end_point = s_center + RIGHT * 6 * (0.5 + 0.5 * np.sin(angle))
+            
+            line = CubicBezier(
+                start_point, control1, control2, end_point,
                 color=BLUE,
-                stroke_width=2
+                stroke_width=2,
+                stroke_opacity=0.7
             )
-            field_lines.add(field_line)
+            
+            # 添加箭头表示方向
+            arrow_tip = Triangle(fill_color=BLUE, fill_opacity=0.7, stroke_width=0)
+            arrow_tip.scale(0.1)
+            arrow_tip.rotate(PI/2)
+            
+            # 在磁感线上放置多个箭头
+            for t in np.linspace(0.2, 0.8, 3):
+                point = line.point_from_proportion(t)
+                direction = line.get_derivative(t)
+                angle = np.arctan2(direction[1], direction[0])
+                
+                arrow = arrow_tip.copy()
+                arrow.move_to(point)
+                arrow.rotate(angle - PI/2)
+                
+                line.add(arrow)
+            
+            lines.add(line)
         
-        return field_lines
+        return lines
     
-    def magnetic_field_equation(self, t, angle, reverse=False):
-        """磁感线方程"""
-        if reverse:
-            x = -1.5 + 1.5 * t
-            y = 0.5 * np.sin(angle) * np.sin(PI * t)
-            z = 0.5 * np.cos(angle) * np.sin(PI * t)
-        else:
-            x = 1.5 - 1.5 * t
-            y = 0.5 * np.sin(angle) * np.sin(PI * t)
-            z = 0.5 * np.cos(angle) * np.sin(PI * t)
+    def show_single_field_line_analysis(self, magnet, coil, field_line):
+        """显示单条磁感线的分析"""
         
-        return np.array([x, y, z])
-    
-    def zoom_in_magnetic_field_analysis(self, magnet, coil):
-        """放大分析一条磁感线"""
-        # 标题
-        zoom_title = Text("微分分析：单条磁感线受力", font_size=36)
-        zoom_title.to_edge(UP)
-        self.play(Write(zoom_title))
+        # 创建放大框
+        zoom_rect = Rectangle(height=4, width=6, color=YELLOW, stroke_width=3)
+        zoom_rect.move_to(RIGHT * 2 + UP * 1)
         
-        # 选择一条磁感线进行放大分析
-        selected_field_line = ParametricFunction(
-            lambda t: self.magnetic_field_equation(t, PI/4),
-            t_range=[0, 2],
-            color=RED,
-            stroke_width=4
+        # 复制并放大磁感线片段
+        line_segment = field_line.copy()
+        line_segment.set_color(RED)
+        line_segment.set_stroke_width(4)
+        
+        # 创建微分段
+        differential_text = Text("微分段 dl", font_size=18, color=WHITE)
+        differential_text.next_to(zoom_rect, UP, buff=0.2)
+        
+        self.play(Create(zoom_rect), Write(differential_text))
+        self.play(line_segment.animate.scale(1.5).move_to(zoom_rect.get_center()))
+        self.wait(1)
+        
+        # 显示磁场方向
+        b_vector = Arrow(
+            start=line_segment.point_from_proportion(0.5),
+            end=line_segment.point_from_proportion(0.5) + UP * 0.8,
+            color=BLUE,
+            stroke_width=4,
+            max_tip_length_to_length_ratio=0.3
         )
+        b_label = Text("B", font_size=18, color=BLUE).next_to(b_vector.get_end(), UP, buff=0.1)
         
-        # 放大并移动到中心
-        self.play(Create(selected_field_line))
+        self.play(GrowArrow(b_vector), Write(b_label))
+        self.wait(1)
         
-        # 创建放大的视图
-        zoom_frame = Rectangle(height=2, width=3, color=WHITE, stroke_width=2)
-        zoom_frame.move_to(selected_field_line.get_center() + 0.5*RIGHT)
-        
-        # 创建放大的磁感线段
-        field_segment = ParametricFunction(
-            lambda t: self.magnetic_field_equation(t, PI/4),
-            t_range=[0.4, 0.6],
-            color=RED,
-            stroke_width=6
+        # 显示电流方向
+        i_vector = Arrow(
+            start=line_segment.point_from_proportion(0.5),
+            end=line_segment.point_from_proportion(0.5) + OUT * 0.8,
+            color=YELLOW,
+            stroke_width=4,
+            max_tip_length_to_length_ratio=0.3
         )
+        i_label = Text("I", font_size=18, color=YELLOW).next_to(i_vector.get_end(), RIGHT, buff=0.1)
         
-        # 创建电流元
-        current_element = Line(
-            start=field_segment.point_from_proportion(0.5) + 0.2*UP,
-            end=field_segment.point_from_proportion(0.5) + 0.2*DOWN,
-            color=GREEN,
-            stroke_width=8
-        )
+        self.play(GrowArrow(i_vector), Write(i_label))
+        self.wait(1)
         
-        # 创建磁场向量
-        field_vector = Arrow(
-            start=field_segment.point_from_proportion(0.5),
-            end=field_segment.point_from_proportion(0.5) + 0.5*RIGHT + 0.3*UP,
-            color=RED,
-            buff=0,
-            stroke_width=4
-        )
-        
-        # 创建电流元向量
-        current_vector = Arrow(
-            start=current_element.get_center(),
-            end=current_element.get_center() + 0.3*OUT,
-            color=GREEN,
-            buff=0,
-            stroke_width=4
-        )
-        
-        # 创建安培力向量
+        # 显示安培力方向
         force_vector = Arrow(
-            start=current_element.get_center(),
-            end=current_element.get_center() + 0.5*RIGHT,
-            color=ORANGE,
-            buff=0,
-            stroke_width=6
+            start=line_segment.point_from_proportion(0.5),
+            end=line_segment.point_from_proportion(0.5) + LEFT * 1.0,
+            color=RED,
+            stroke_width=6,
+            max_tip_length_to_length_ratio=0.3
         )
+        force_label = Text("dF", font_size=18, color=RED).next_to(force_vector.get_end(), LEFT, buff=0.1)
         
-        # 标签
-        b_label = Text("B", font_size=20, color=RED).next_to(field_vector.get_end(), RIGHT, buff=0.1)
-        dl_label = Text("dl", font_size=20, color=GREEN).next_to(current_vector.get_end(), OUT, buff=0.1)
-        df_label = Text("dF", font_size=20, color=ORANGE).next_to(force_vector.get_end(), RIGHT, buff=0.1)
-        # 显示放大视图
-        self.play(Create(zoom_frame))
+        force_eq = MathTex("d\\vec{F} = I \\, d\\vec{l} \\times \\vec{B}", font_size=20, color=WHITE)
+        force_eq.next_to(zoom_rect, DOWN, buff=0.2)
+        
+        self.play(GrowArrow(force_vector), Write(force_label), Write(force_eq))
+        self.wait(2)
+        
+        # 清理放大视图
         self.play(
-            selected_field_line.animate.set_stroke(width=1, opacity=0.3),
-            Create(field_segment),
-            Create(current_element),
-            GrowArrow(field_vector),
-            GrowArrow(current_vector),
-            GrowArrow(force_vector),
-            Write(b_label),
-            Write(dl_label),
-            Write(df_label)
-        )
-        
-        # 显示安培力公式
-        formula = MathTex("d\\vec{F} = I(\\vec{dl} \\times \\vec{B})", font_size=32)
-        formula.to_edge(DOWN)
-        self.play(Write(formula))
-        
-        explanation = Text("电流元在磁场中受到的安培力", font_size=24)
-        explanation.next_to(formula, UP, buff=0.2)
-        self.play(Write(explanation))
-        
-        self.wait(3)
-        
-        # 清除放大视图
-        self.play(
-            FadeOut(zoom_title),
-            FadeOut(zoom_frame),
-            FadeOut(field_segment),
-            FadeOut(current_element),
-            FadeOut(field_vector),
-            FadeOut(current_vector),
-            FadeOut(force_vector),
+            FadeOut(zoom_rect),
+            FadeOut(differential_text),
+            FadeOut(line_segment),
+            FadeOut(b_vector),
             FadeOut(b_label),
-            FadeOut(dl_label),
-            FadeOut(df_label),
-            FadeOut(formula),
-            FadeOut(explanation),
-            FadeOut(selected_field_line)
+            FadeOut(i_vector),
+            FadeOut(i_label),
+            FadeOut(force_vector),
+            FadeOut(force_label),
+            FadeOut(force_eq)
         )
     
-    def overall_force_calculation(self, magnet, coil):
-        """整体计算合力"""
-        # 标题
-        overall_title = Text("整体合力计算", font_size=36)
-        overall_title.to_edge(UP)
-        self.play(Write(overall_title))
+    def show_net_force_effect(self, magnet, coil):
+        """显示合力效果"""
         
-        # 重新显示磁铁和线圈
-        self.play(
-            magnet.animate.set_opacity(1),
-            coil.animate.set_opacity(1)
-        )
-        
-        # 创建多个电流元和受力向量
-        current_elements = VGroup()
+        # 在多个位置显示力向量
         force_vectors = VGroup()
-        
-        # 在圆周上均匀分布电流元
-        for i in range(12):
-            angle = i * 2 * PI / 12
-            element_pos = coil.get_center() + 0.8 * np.array([np.cos(angle), np.sin(angle), 0])
-            
-            # 电流元方向（切线方向）
-            dl_direction = np.array([-np.sin(angle), np.cos(angle), 0])
-            
-            # 创建电流元
-            current_element = Line(
-                start=element_pos - 0.1 * dl_direction,
-                end=element_pos + 0.1 * dl_direction,
-                color=GREEN,
-                stroke_width=4
+        for angle in np.linspace(0, 2*PI, 8, endpoint=False):
+            point = coil.point_at_angle(angle)
+            force_vec = Arrow(
+                start=point,
+                end=point + LEFT * 0.8,
+                color=RED,
+                stroke_width=4,
+                max_tip_length_to_length_ratio=0.3
             )
-            current_elements.add(current_element)
-            
-            # 计算安培力方向（假设磁场方向从N到S）
-            # 简化模型：力方向大致向外
-            force_direction = np.array([np.cos(angle), np.sin(angle), 0])
-            
-            # 创建受力向量
-            force_vector = Arrow(
-                start=element_pos,
-                end=element_pos + 0.5 * force_direction,
-                color=ORANGE,
-                buff=0,
-                stroke_width=3
-            )
-            force_vectors.add(force_vector)
+            force_vectors.add(force_vec)
         
-        # 显示电流元和受力向量
-        self.play(Create(current_elements), run_time=2)
-        self.play(Create(force_vectors), run_time=2)
+        self.play(LaggedStartMap(GrowArrow, force_vectors, lag_ratio=0.1))
+        self.wait(1)
         
-        # 显示合力
-        resultant_force = Arrow(
+        # 显示合力向量
+        net_force = Arrow(
             start=coil.get_center(),
-            end=coil.get_center() + 2*RIGHT,
+            end=coil.get_center() + LEFT * 2.5,
             color=RED,
-            buff=0,
-            stroke_width=10
+            stroke_width=8,
+            max_tip_length_to_length_ratio=0.2
         )
-        resultant_label = Text("F = ∮ I(dl × B)", font_size=24, color=RED).next_to(resultant_force, RIGHT, buff=0.2)
+        net_force_label = Text("F_net", font_size=24, color=RED).next_to(net_force.get_end(), DOWN, buff=0.2)
         
-        self.play(GrowArrow(resultant_force), Write(resultant_label))
+        net_force_eq = MathTex("\\vec{F}_{net} = \\oint I \\, d\\vec{l} \\times \\vec{B}", font_size=24, color=WHITE)
+        net_force_eq.next_to(coil, DOWN, buff=1.0)
         
-        explanation = Text("对所有电流元积分得到总安培力", font_size=24)
-        explanation.to_edge(DOWN)
-        self.play(Write(explanation))
-        # 演示斥力效果
-        self.play(
-            coil.animate.shift(1.5*RIGHT),
-            force_vectors.animate.shift(1.5*RIGHT),
-            resultant_force.animate.shift(1.5*RIGHT),
-            resultant_label.animate.shift(1.5*RIGHT),
-            run_time=3
-        )
-        
+        self.play(GrowArrow(net_force), Write(net_force_label), Write(net_force_eq))
         self.wait(2)
         
-        # 总结
-        conclusion = Text("通电线圈在条形磁铁磁场中受到安培斥力", font_size=30, color=YELLOW)
-        conclusion.move_to(ORIGIN)
+        # 显示排斥效果
+        coil_original_pos = coil.get_center()
+        magnet_original_pos = magnet.get_center()
         
+        # 线圈向左移动，磁铁向右移动（排斥）
         self.play(
-            FadeOut(overall_title),
-            FadeOut(current_elements),
-            FadeOut(force_vectors),
-            FadeOut(resultant_force),
-            FadeOut(resultant_label),
-            FadeOut(explanation),
-            FadeOut(magnet),
-            FadeOut(coil)
+            coil.animate.shift(LEFT * 1.5),
+            current_dots.animate.shift(LEFT * 1.5),
+            current_arrows.animate.shift(LEFT * 1.5),
+            force_vectors.animate.shift(LEFT * 1.5),
+            net_force.animate.shift(LEFT * 1.5),
+            net_force_label.animate.shift(LEFT * 1.5),
+            magnet.animate.shift(RIGHT * 0.3),
+            n_label.animate.shift(RIGHT * 0.3),
+            s_label.animate.shift(RIGHT * 0.3),
+            run_time=2,
+            rate_func=rate_functions.ease_out_sine
         )
-        
-        self.play(Write(conclusion))
-        self.wait(2)
+        self.wait(1)
+
+# 运行场景
+if __name__ == "__main__":
+    scene = AmpereForceDifferential()
+    scene.render()
