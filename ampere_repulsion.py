@@ -93,9 +93,15 @@ class AmpereForce(Scene):
         field_lines = self.create_magnetic_field_lines(magnet, coil)
         self.play(LaggedStartMap(Create, field_lines, lag_ratio=0.1), run_time=3)
         self.wait(2)
-        
+        self.play(
+            FadeOut(current_text),
+            FadeOut(section1),
+            FadeOut(coil),
+            FadeOut(self.current_dots),
+            FadeOut(self.current_arrows)
+        )
         # 第二部分：微分分析
-        self.play(FadeOut(section1))
+        # self.play(FadeOut(section1))
         section2 = Text("2. 微分分析：单条磁感线的作用", font_size=28, color=GREEN)
         section2.next_to(title, DOWN, buff=0.5)
         self.play(Write(section2))
@@ -121,7 +127,6 @@ class AmpereForce(Scene):
         conclusion.next_to(section3, DOWN, buff=0.5)
         self.play(Write(conclusion))
         self.wait(3)
-    
     def create_magnetic_field_lines(self, magnet, coil):
         """创建磁感线"""
         lines = VGroup()
