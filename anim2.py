@@ -81,7 +81,7 @@ class CurrentMicroExpression(Scene):
         self.wait(1)
 
         # 最终结果
-        final_eq = MathTex("I", "=", "n", "S", "v", "e", font_size=60)
+        final_eq = MathTex("I = n S v e", font_size=60)
         self.play(Transform(step3[2], final_eq))
         self.wait(1)
 
