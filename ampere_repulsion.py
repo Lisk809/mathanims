@@ -43,30 +43,36 @@ class AmpereForce(Scene):
         coil.move_to(RIGHT * 3)
         
         # 电流方向指示
-        current_dots = VGroup()
-        current_arrows = VGroup()
+        self.current_dots = VGroup()
+        self.current_arrows = VGroup()
         for angle in np.linspace(0, 2*PI, 12, endpoint=False):
             dot = Dot(radius=0.05, color=YELLOW)
             dot.move_to(coil.point_at_angle(angle))
             
+            # 使用向量来计算方向
+            start_point = coil.point_at_angle(angle + 0.1)
+            end_point = coil.point_at_angle(angle - 0.1)
+            direction = end_point - start_point
+            direction = direction / np.linalg.norm(direction) * 0.3
+            
             arrow = Arrow(
-                start=coil.point_at_angle(angle + 0.1),
-                end=coil.point_at_angle(angle - 0.1),
+                start=start_point,
+                end=start_point + direction,
                 color=YELLOW,
                 stroke_width=3,
-                max_tip_length_to_length_ratio=0.2
+                max_tip_length_to_length_ratio=0.3
             )
             
-            current_dots.add(dot)
-            current_arrows.add(arrow)
+            self.current_dots.add(dot)
+            self.current_arrows.add(arrow)
         
         self.play(
             Create(magnet),
             Write(n_label),
             Write(s_label),
             Create(coil),
-            Create(current_dots),
-            Create(current_arrows)
+            Create(self.current_dots),
+            Create(self.current_arrows)
         )
         self.wait(2)
         
@@ -106,7 +112,7 @@ class AmpereForce(Scene):
         self.wait(1)
         
         # 显示合力效果
-        self.show_net_force_effect(magnet, coil)
+        self.show_net_force_effect(magnet, coil, field_lines)
         self.wait(2)
         
         # 结论
@@ -140,7 +146,7 @@ class AmpereForce(Scene):
                 stroke_opacity=0.7
             )
             
-            # 添加箭头表示方向
+            # 添加箭头表示方向 - 使用手动计算的方向
             arrow_tip = Triangle(fill_color=BLUE, fill_opacity=0.7, stroke_width=0)
             arrow_tip.scale(0.1)
             arrow_tip.rotate(PI/2)
@@ -148,14 +154,22 @@ class AmpereForce(Scene):
             # 在磁感线上放置多个箭头
             for t in np.linspace(0.2, 0.8, 3):
                 point = line.point_from_proportion(t)
-                direction = line.get_derivative(t)
-                angle = np.arctan2(direction[1], direction[0])
                 
-                arrow = arrow_tip.copy()
-                arrow.move_to(point)
-                arrow.rotate(angle - PI/2)
+                # 手动计算方向向量（导数近似）
+                t1 = max(0, t - 0.01)
+                t2 = min(1, t + 0.01)
+                p1 = line.point_from_proportion(t1)
+                p2 = line.point_from_proportion(t2)
+                direction = p2 - p1
                 
-                line.add(arrow)
+                if np.linalg.norm(direction) > 0:
+                    angle_rad = np.arctan2(direction[1], direction[0])
+                    
+                    arrow = arrow_tip.copy()
+                    arrow.move_to(point)
+                    arrow.rotate(angle_rad - PI/2)
+                    
+                    line.add(arrow)
             
             lines.add(line)
         
@@ -237,7 +251,7 @@ class AmpereForce(Scene):
             FadeOut(force_eq)
         )
     
-    def show_net_force_effect(self, magnet, coil):
+    def show_net_force_effect(self, magnet, coil, field_lines):
         """显示合力效果"""
         
         # 在多个位置显示力向量
@@ -273,14 +287,10 @@ class AmpereForce(Scene):
         self.wait(2)
         
         # 显示排斥效果
-        coil_original_pos = coil.get_center()
-        magnet_original_pos = magnet.get_center()
-        
         # 线圈向左移动，磁铁向右移动（排斥）
         self.play(
             coil.animate.shift(LEFT * 1.5),
-            current_dots.animate.shift(LEFT * 1.5),
-            current_arrows.animate.shift(LEFT * 1.5),
+            self.current_arrows.animate.shift(LEFT * 1.5),
             force_vectors.animate.shift(LEFT * 1.5),
             net_force.animate.shift(LEFT * 1.5),
             net_force_label.animate.shift(LEFT * 1.5),
@@ -291,8 +301,3 @@ class AmpereForce(Scene):
             rate_func=rate_functions.ease_out_sine
         )
         self.wait(1)
-
-# 运行场景
-if __name__ == "__main__":
-    scene = AmpereForceDifferential()
-    scene.render()
