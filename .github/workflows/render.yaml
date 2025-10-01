@@ -45,7 +45,7 @@ jobs:
     - name: Render Manim animations
       run: |
         # 渲染单个文件
-        manim -qh anim1.py EllipseProblem
+        manim -qh ampere_repulsion.py AmpereForce
         # 或者渲染目录中的所有文件
         # manim -ql ./
         
