@@ -158,7 +158,7 @@ class AbsurdMathLife(Scene):
         self.play(Write(subtitle))
         
         # 最后搞笑的数学公式
-        funny_equation = MathTex("\\text{生活} = \\frac{\\text{荒谬}}{\\text{意义}}").scale(1.5).next_to(subtitle, DOWN, buff=0.5)
+        funny_equation = MathTex("\\text{Life} = \\frac{\\text{Absurd}}{\\text{Meaning}}").scale(1.5).next_to(subtitle, DOWN, buff=0.5)
         self.play(Write(funny_equation))
         
         self.wait(3)
