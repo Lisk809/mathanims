@@ -36,7 +36,8 @@ class AmpereForce(Scene):
         # 磁极标签
         n_label = Text("N", font_size=24, color=WHITE).next_to(magnet, UP, buff=0.2)
         s_label = Text("S", font_size=24, color=WHITE).next_to(magnet, DOWN, buff=0.2)
-        
+        self.n_label = n_label
+        self.s_label = s_label
         # 创建通电线圈
         coil_radius = 1.2
         coil = Circle(radius=coil_radius, color=YELLOW, stroke_width=4)
@@ -295,8 +296,8 @@ class AmpereForce(Scene):
             net_force.animate.shift(LEFT * 1.5),
             net_force_label.animate.shift(LEFT * 1.5),
             magnet.animate.shift(RIGHT * 0.3),
-            n_label.animate.shift(RIGHT * 0.3),
-            s_label.animate.shift(RIGHT * 0.3),
+            self.n_label.animate.shift(RIGHT * 0.3),
+            self.s_label.animate.shift(RIGHT * 0.3),
             run_time=2,
             rate_func=rate_functions.ease_out_sine
         )
