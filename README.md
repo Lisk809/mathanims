@@ -1,8 +1,8 @@
 # Manim 动画项目集
 
-![https://img.shields.io/badge/Manim-Animation-blue?style=flat-square]
-![https://img.shields.io/badge/Python-3.7+-green?style=flat-square]
-![https://img.shields.io/badge/License-MIT-yellow?style=flat-square]
+![manim_animation](https://img.shields.io/badge/Manim-Animation-blue?style=flat-square)
+![python3.7+](https://img.shields.io/badge/Python-3.7+-green?style=flat-square)
+![MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
 这是一个使用 Manim 数学动画引擎创建的动画项目集合。所有动画都是用 Python 代码编写和生成的，展示了数学概念、算法可视化、物理模拟等各种主题的动画。
 
