@@ -29,7 +29,7 @@ class CurrentMicroExpression(Scene):
             MathTex("\\text{在时间}\\Delta t\\text{内，电子移动距离：}", font_size=36),
             MathTex("L = v \\Delta t", font_size=36),
             MathTex("\\text{通过截面的电子数：}", font_size=36),
-            MathTex("N = n \\cdot S \\cdot L", font_size=36)
+            MathTex("N = n \\cdot S \\cdot L", font_size=36),
             MathTex("N = n \\cdot S \\cdot v \\Delta t", font_size=36)
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.4)
         step1.next_to(title, DOWN, buff=0.5)
