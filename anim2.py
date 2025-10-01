@@ -26,8 +26,10 @@ class CurrentMicroExpression(Scene):
 
         # 推导步骤1：时间Δt内通过截面的电子数
         step1 = VGroup(
-            MathTex("\\text{在时间}\\Delta t\\text{内，电子移动距离：}", "L = v \\Delta t", font_size=36),
-            MathTex("\\text{通过截面的电子数：}", "N = n \\cdot S \\cdot L", font_size=36),
+            MathTex("\\text{在时间}\\Delta t\\text{内，电子移动距离：}", font_size=36),
+            MathTex("L = v \\Delta t", font_size=36),
+            MathTex("\\text{通过截面的电子数：}", font_size=36),
+            MathTex("N = n \\cdot S \\cdot L", font_size=36)
             MathTex("N = n \\cdot S \\cdot v \\Delta t", font_size=36)
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.4)
         step1.next_to(title, DOWN, buff=0.5)
@@ -41,7 +43,8 @@ class CurrentMicroExpression(Scene):
 
         # 推导步骤2：总电荷量
         step2 = VGroup(
-            MathTex("\\text{通过的总电荷量：}", "\\Delta Q = N \\cdot e", font_size=36),
+            MathTex("\\text{通过的总电荷量：}", font_size=36),
+            MathTex("\\Delta Q = N \\cdot e", font_size=36),
             MathTex("\\Delta Q = n S v \\Delta t \\cdot e", font_size=36)
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.4)
         step2.next_to(step1, DOWN, buff=0.5)
@@ -53,7 +56,8 @@ class CurrentMicroExpression(Scene):
 
         # 推导步骤3：电流定义
         step3 = VGroup(
-            MathTex("\\text{电流定义：}", "I = \\frac{\\Delta Q}{\\Delta t}", font_size=36),
+            MathTex("\\text{电流定义：}", font_size=36),
+            MathTex("I = \\frac{\\Delta Q}{\\Delta t}", font_size=36),
             MathTex("I = \\frac{n S v \\Delta t \\cdot e}{\\Delta t}", font_size=36),
             MathTex("I = n S v e", font_size=36)
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.4)
