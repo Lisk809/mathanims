@@ -74,53 +74,6 @@ def _split_chinese_and_math(tex_string):
     
     return parts
 
-# 保存原始的MathTex.__init__方法
-original_mathtex_init = MathTex.__init__
-
-# 增强的MathTex.__init__方法
-def enhanced_mathtex_init(self, tex_string, **kwargs):
-    """增强的MathTex初始化方法，支持中文"""
-    # 检查是否包含中文
-    if CHINESE_PATTERN.search(tex_string):
-        # 先调用原始初始化方法创建一个空的MathTex对象
-        original_mathtex_init(self, "", **kwargs)
-        
-        # 分离中文和LaTeX部分
-        parts = _split_chinese_and_math(tex_string)
-        
-        # 创建组合对象
-        combined = VGroup()
-        
-        # 处理每个部分
-        for part_type, content in parts:
-            if part_type == "chinese":
-                # 中文部分使用Text
-                obj = Text(content, font=DEFAULT_CHINESE_FONT)
-            else:  # part_type == "math"
-                # 数学部分使用原始的MathTex
-                if content.strip():
-                    try:
-                        obj = MathTex(content, **kwargs)
-                    except Exception as e:
-                        print(f"MathTex错误: {e}，使用Text替代")
-                        obj = Text(content, font=DEFAULT_CHINESE_FONT)
-                else:
-                    obj = Text("", font=DEFAULT_CHINESE_FONT)
-            
-            # 添加到组合中
-            combined.add(obj)
-        
-        # 水平排列所有部分
-        if len(combined) > 0:
-            combined.arrange(RIGHT, buff=0.05)
-            
-            # 清除现有的子对象并添加combined
-            self.submobjects = []
-            self.add(combined)
-    else:
-        # 不包含中文，使用原始的MathTex.__init__
-        original_mathtex_init(self, tex_string, **kwargs)
-
 # 保存原始的Tex.__init__方法
 original_tex_init = Tex.__init__
 
@@ -129,22 +82,6 @@ def enhanced_tex_init(self, tex_string, **kwargs):
     """增强的Tex初始化方法，支持中文"""
     # 检查是否包含中文
     if CHINESE_PATTERN.search(tex_string):
-        # 先调用原始初始化方法创建一个空的Tex对象
-        original_tex_init(self, "", **kwargs)
-        
-        # 尝试使用CTEX模板
-        try:
-            # 创建一个临时Tex对象
-            if 'tex_template' not in kwargs:
-                kwargs['tex_template'] = CTEX_TEMPLATE
-            temp_tex = Tex.__new__(Tex)
-            original_tex_init(temp_tex, tex_string, **kwargs)
-            
-            # 复制临时对象的属性到self
-            self.submobjects = []
-            self.add(*temp_tex.submobjects)
-        except Exception as e:
-            print(f"Tex错误: {e}，使用Text和MathTex组合替代")
             # 回退到分离中文和数学部分的方法
             self.submobjects = []
             

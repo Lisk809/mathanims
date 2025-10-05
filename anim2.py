@@ -1,19 +1,75 @@
 from manim import *
-from patch.auto_chinese_patch import *
+import re
+
+def split_chinese_latex(text_string):
+    """
+    将包含中文和LaTeX的字符串分开，中文用Text显示，LaTeX用MathTex显示
+    
+    Args:
+        text_string (str): 包含中文和LaTeX的混合字符串
+        
+    Returns:
+        list: 包含Text和MathTex对象的列表
+    """
+    # 正则表达式匹配LaTeX公式（$...$ 或 $$...$$）
+    pattern = r'(\$\$.*?\$\$|\$.*?\$|[^$]+)'
+    
+    parts = []
+    segments = re.findall(pattern, text_string)
+    
+    for segment in segments:
+        if not segment:
+            continue
+            
+        # 检查是否是LaTeX公式
+        if segment.startswith('$') and segment.endswith('$'):
+            # 去掉首尾的$符号
+            latex_content = segment[1:-1] if segment.startswith('$') and not segment.startswith('$$') else segment[2:-2]
+            parts.append(MathTex(latex_content))
+        else:
+            # 中文文本部分
+            parts.append(Text(segment))
+    
+    return parts
+
+def create_mixed_text_group(text_string, **kwargs):
+    """
+    创建包含中文和LaTeX的混合文本组
+    
+    Args:
+        text_string (str): 包含中文和LaTeX的混合字符串
+        **kwargs: 传递给Text和MathTex的样式参数
+        
+    Returns:
+        VGroup: 包含所有文本元素的垂直组
+    """
+    elements = split_chinese_latex(text_string)
+    
+    # 应用样式参数
+    for element in elements:
+        for key, value in kwargs.items():
+            if hasattr(element, key):
+                setattr(element, key, value)
+    
+    # 创建组并排列元素
+    group = VGroup(*elements)
+    group.arrange(RIGHT, aligned_edge=DOWN, buff=0.1)
+    
+    return group
 
 class EllipseProblem(Scene):
     def construct(self):
         # Part 1: Ellipse Equation
-        question0 = Tex(r"已知椭圆 $ C: \frac{x^2}{a^2} + \frac{y^2}{b^2} = 1 (a, b > 0) $，长轴长为4，且过点 $ (1, \frac{3}{2}) $。")
+        question0 = create_mixed_text_group(r"已知椭圆 $ C: \frac{x^2}{a^2} + \frac{y^2}{b^2} = 1 (a, b > 0) $，长轴长为4，且过点 $ (1, \frac{3}{2}) $。")
         question0.shift(UP * 1.25)
 
-        question1 = Tex(r"（1）求椭圆 $ C $ 的方程；")
+        question1 = create_mixed_text_group(r"（1）求椭圆 $ C $ 的方程；")
         question0.shift(UP * 0)
 
-        question2 = Tex(r"（2）过点 $ P(-1, 0) $ 作两条互相垂直的直线 $ l_1, l_2 $，直线 $ l_1 $ 交椭圆 $ C $ 于 $ A, B $ 两点，直线 $ l_2 $ 交椭圆 $ C $ 于 $ C, D $ 两点，线段 $ AB, CD $ 的中点分别为 $ M, N $，证明：直线 $ MN $ 过定点；")
+        question2 = create_mixed_text_group(r"（2）过点 $ P(-1, 0) $ 作两条互相垂直的直线 $ l_1, l_2 $，直线 $ l_1 $ 交椭圆 $ C $ 于 $ A, B $ 两点，直线 $ l_2 $ 交椭圆 $ C $ 于 $ C, D $ 两点，线段 $ AB, CD $ 的中点分别为 $ M, N $，证明：直线 $ MN $ 过定点；")
         question0.shift(DOWN * 1.25)
 
-        question3 = Tex(r"（3）若点 $ E $ 在椭圆 $ C $ 上的运动，$ F(0, 1), Q(0, -1) $，直线 $ EF, EQ $ 分别交椭圆 $ C $ 于点 $ H, K $，且满足 $\frac{FH}{EH} = \frac{1}{1 + \lambda}, \quad \frac{QK}{EK} = \frac{1}{1 + \mu},$ 证明：$\lambda + \mu$ 为定值。")
+        question3 = create_mixed_text_group(r"（3）若点 $ E $ 在椭圆 $ C $ 上的运动，$ F(0, 1), Q(0, -1) $，直线 $ EF, EQ $ 分别交椭圆 $ C $ 于点 $ H, K $，且满足 $\frac{FH}{EH} = \frac{1}{1 + \lambda}, \quad \frac{QK}{EK} = \frac{1}{1 + \mu},$ 证明：$\lambda + \mu$ 为定值。")
         question0.shift(DOWN * 2.5)
         self.play(Write(question0))
         self.play(Write(question1))
@@ -27,12 +83,12 @@ class EllipseProblem(Scene):
         self.wait(2)
         self.play(FadeOut(title1))
 
-        a_eq = Tex(r"长轴长为 4，即 $ 2a = 4 $，所以  $a = 2 $")
+        a_eq = create_mixed_text_group(r"长轴长为 4，即 $ 2a = 4 $，所以  $a = 2 $")
         self.play(Write(a_eq))
         self.wait(2)
         self.play(FadeOut(a_eq))
 
-        point_eq = Tex(r"椭圆过点 $ (1, \frac{3}{2}) $，代入方程：")
+        point_eq = create_mixed_text_group(r"椭圆过点 $ (1, \frac{3}{2}) $，代入方程：")
         point_eq.shift(UP * 1.5)
         self.play(Write(point_eq))
         self.wait(2)
@@ -227,7 +283,7 @@ class EllipseProblem(Scene):
         self.wait(3)
         self.clear()
         # 为简洁起见，省略详细动画代码
-        text20 = Tex("过点 $ P(-1, 0) $ 作两条互相垂直的直线  $l_1, l_2$ ，设 $ l_1 $ 的斜率为 $ k $，则方程为：")
+        text20 = create_mixed_text_group("过点 $ P(-1, 0) $ 作两条互相垂直的直线  $l_1, l_2$ ，设 $ l_1 $ 的斜率为 $ k $，则方程为：")
         text20.shift(UP * 1)
         text21 = MathTex("y = k(x + 1)")
         text22 = Text("代入椭圆方程：")
@@ -252,7 +308,7 @@ class EllipseProblem(Scene):
         self.wait(3)
         self.clear()
         
-        text26 = Tex("设  $C(x_3, y_3), D(x_4, y_4)$ ，则中点  N  的坐标为：")
+        text26 = create_mixed_text_group("设  $C(x_3, y_3), D(x_4, y_4)$ ，则中点  N  的坐标为：")
         text26.shift(UP * 1)
         text27 = MathTex(r"x_N = \frac{x_3 + x_4}{2} = -\frac{4}{3k^2 + 4}, \quad y_N = -\frac{1}{k}(x_N + 1) = -\frac{3k}{3k^2 + 4}")
         text28 = Text("即：")
@@ -266,21 +322,21 @@ class EllipseProblem(Scene):
         self.play(Write(text29))
         self.wait(3)
         self.clear()
-        text210 = Tex("设直线  MN  的斜率为 $ k_{MN} $，计算得：")
+        text210 = create_mixed_text_group("设直线  MN  的斜率为 $ k_{MN} $，计算得：")
         text210.shift(UP * 1)
-        text211 = Tex(r"k_{MN} = \frac{-7k}{4(k^2 - 1)}")
+        text211 = create_mixed_text_group(r"k_{MN} = \frac{-7k}{4(k^2 - 1)}")
         self.play(Write(text210))
         self.play(Write(text211))
         self.wait(3)
         self.clear()
-        text212 = Tex("取点  M  写直线方程：")
+        text212 = create_mixed_text_group("取点  M  写直线方程：")
         text212.shift(UP)
         text213 = MathTex(r"y - \frac{3k}{3 + 4k^2} = \frac{-7k}{4(k^2 - 1)} \left( x + \frac{4k^2}{3 + 4k^2} \right)")
         self.play(Write(text212))
         self.play(Write(text213))
         self.wait(3)
         self.clear()
-        text214 = Tex("令 $ y = 0 $，解得 $ x = -\frac{4}{7} $，与  k  无关。")
+        text214 = create_mixed_text_group("令 $ y = 0 $，解得 $ x = -\frac{4}{7} $，与  k  无关。")
         text215 = Text("因此，直线  MN  恒过定点：")
         text216 = MathTex(r"\boxed{\left( -\frac{4}{7},\ 0 \right)}")
         self.play(Write(text214))
@@ -295,15 +351,15 @@ class EllipseProblem(Scene):
         self.wait(2)
         self.play(FadeOut(title3))
 
-        text311 = Tex("设点 $ E(x_0, y_0) $ 在椭圆上，满足：")
+        text311 = create_mixed_text_group("设点 $ E(x_0, y_0) $ 在椭圆上，满足：")
         text311.shift(UP)
-        text312 = Tex(r"\frac{x_0^2}{4} + \frac{y_0^2}{3} = 1 \implies 3x_0^2 + 4y_0^2 = 12")
+        text312 = create_mixed_text_group(r"\frac{x_0^2}{4} + \frac{y_0^2}{3} = 1 \implies 3x_0^2 + 4y_0^2 = 12")
 
-        text313 = Tex("过  E(x_0, y_0) 、 F(0, 1)  的直线参数方程为：")
+        text313 = create_mixed_text_group("过  E(x_0, y_0) 、 F(0, 1)  的直线参数方程为：")
         text313.shift(UP)
         text314 = MathTex(r"x = x_0(1 - t), \quad y = y_0 + t(1 - y_0)")
 
-        text315 = Tex("代入椭圆方程，整理得关于  $t$  的二次方程。已知  $t = 0 $ 对应点 $ E $，另一解 $ t_H $ 对应点 $ H $，计算得：")
+        text315 = create_mixed_text_group("代入椭圆方程，整理得关于  $t$  的二次方程。已知  $t = 0 $ 对应点 $ E $，另一解 $ t_H $ 对应点 $ H $，计算得：")
         text315.shift(UP)
         text316 = MathTex(r"t_H = \frac{3 - y_0}{2 - y_0}")
 
@@ -328,11 +384,11 @@ class EllipseProblem(Scene):
         self.wait(3)
         self.clear()
         
-        text321 = Tex("过 $ E(x_0, y_0) $、 $Q(0, -1) $ 的直线参数方程为：")
+        text321 = create_mixed_text_group("过 $ E(x_0, y_0) $、 $Q(0, -1) $ 的直线参数方程为：")
         text321.shift(UP)
         text322 = MathTex(r"x = x_0(1 - t), \quad y = y_0 - t(1 + y_0)")
 
-        text323 = Tex("代入椭圆方程，得另一解 $ t_K $ 对应点  K ：")
+        text323 = create_mixed_text_group("代入椭圆方程，得另一解 $ t_K $ 对应点  K ：")
 
         text324 = MathTex(r"t_K = \frac{3 + y_0}{2 + y_0}")
 
