@@ -1,4 +1,5 @@
 from manim import *
+from patch.auto_chinese_patch import *
 
 class EllipseProblem(Scene):
     def construct(self):
