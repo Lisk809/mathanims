@@ -45,7 +45,7 @@ jobs:
     - name: Render Manim animations
       run: |
         # 渲染单个文件
-        manim -qh anim2.py CurrentMicroExpression
+        manim -qh anim2.py EllipseProblem
         # 或者渲染目录中的所有文件
         # manim -ql ./
         
