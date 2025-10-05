@@ -42,7 +42,7 @@ class EllipseProblem(Scene):
         self.play(Transform(point_eq, simplify_eq))
         self.wait(2)
 
-        b_eq = MathTex("\\frac{9}{4b^2} = \\frac{3}{4}", "\\Rightarrow", "b^2 = 3")
+        b_eq = MathTex("\\frac{9}{4b^2} = \\frac{3}{4} \\Rightarrow b^2 = 3")
         b_eq.shift(DOWN * 1.5)
         self.play(Write(b_eq))
         self.wait(2)
