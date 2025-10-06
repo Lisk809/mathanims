@@ -77,8 +77,10 @@ class EllipseProblem(Scene):
         question32.shift(DOWN * 3)
         self.play(Write(question0))
         self.play(Write(question1))
-        self.play(Write(question2))
-        self.play(Write(question3))
+        self.play(Write(question21))
+        self.play(Write(question22))
+        self.play(Write(question31))
+        self.play(Write(question32))
         self.clear()
         
         
