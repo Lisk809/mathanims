@@ -336,7 +336,7 @@ class EllipseProblem(Scene):
         self.play(Write(text213))
         self.wait(3)
         self.clear()
-        text214 = create_mixed_text_group("令 $ y = 0 $，解得 $ x = -\frac{4}{7} $，与  k  无关。")
+        text214 = create_mixed_text_group(r"令 $ y = 0 $，解得 $ x = -\frac{4}{7} $，与  k  无关。")
         text215 = Text("因此，直线  MN  恒过定点：")
         text216 = MathTex(r"\boxed{\left( -\frac{4}{7},\ 0 \right)}")
         self.play(Write(text214))
