@@ -28,7 +28,7 @@ def split_chinese_latex(text_string):
             parts.append(MathTex(latex_content))
         else:
             # 中文文本部分
-            parts.append(Text(segment))
+            parts.append(Text(segment, font_size=24))
     
     return parts
 
@@ -61,16 +61,20 @@ class EllipseProblem(Scene):
     def construct(self):
         # Part 1: Ellipse Equation
         question0 = create_mixed_text_group(r"已知椭圆 $ C: \frac{x^2}{a^2} + \frac{y^2}{b^2} = 1 (a, b > 0) $，长轴长为4，且过点 $ (1, \frac{3}{2}) $。")
-        question0.shift(UP * 1.25)
+        question0.shift(UP * 2)
 
         question1 = create_mixed_text_group(r"（1）求椭圆 $ C $ 的方程；")
-        question0.shift(UP * 0)
+        question1.shift(UP * 1)
 
-        question2 = create_mixed_text_group(r"（2）过点 $ P(-1, 0) $ 作两条互相垂直的直线 $ l_1, l_2 $，直线 $ l_1 $ 交椭圆 $ C $ 于 $ A, B $ 两点，直线 $ l_2 $ 交椭圆 $ C $ 于 $ C, D $ 两点，线段 $ AB, CD $ 的中点分别为 $ M, N $，证明：直线 $ MN $ 过定点；")
-        question0.shift(DOWN * 1.25)
+        question21 = create_mixed_text_group(r"（2）过点 $ P(-1, 0) $ 作两条互相垂直的直线 $ l_1, l_2 $，直线 $ l_1 $ 交椭圆 $ C $ 于 $ A, B $ 两点，")
+        question22 = create_mixed_text_group(r"直线 $ l_2 $ 交椭圆 $ C $ 于 $ C, D $ 两点，线段 $ AB, CD $ 的中点分别为 $ M, N $，证明：直线 $ MN $ 过定点；")
+        question22.shift(DOWN * 1)
+        
 
-        question3 = create_mixed_text_group(r"（3）若点 $ E $ 在椭圆 $ C $ 上的运动，$ F(0, 1), Q(0, -1) $，直线 $ EF, EQ $ 分别交椭圆 $ C $ 于点 $ H, K $，且满足 $\frac{FH}{EH} = \frac{1}{1 + \lambda}, \quad \frac{QK}{EK} = \frac{1}{1 + \mu},$ 证明：$\lambda + \mu$ 为定值。")
-        question0.shift(DOWN * 2.5)
+        question31 = create_mixed_text_group(r"（3）若点 $ E $ 在椭圆 $ C $ 上的运动，$ F(0, 1), Q(0, -1) $，直线 $ EF, EQ $ 分别交椭圆 $ C $ 于点 $ H, K $，")
+        question32 = create_mixed_text_group(r"且满足 $\frac{FH}{EH} = \frac{1}{1 + \lambda}, \quad \frac{QK}{EK} = \frac{1}{1 + \mu},$ 证明：$\lambda + \mu$ 为定值。")
+        question31.shift(DOWN * 2)
+        question32.shift(DOWN * 3)
         self.play(Write(question0))
         self.play(Write(question1))
         self.play(Write(question2))
@@ -135,19 +139,19 @@ class EllipseProblem(Scene):
         # 绘制椭圆 x²/4 + y²/3 = 1
         ellipse = axes.plot_implicit_curve(
             lambda x, y: x**2/4 + y**2/3 - 1,
-            color=YELLOW,
+            color=WHITE,
             stroke_width=4
         )
-        ellipse_label = MathTex(r"\frac{x^2}{4} + \frac{y^2}{3} = 1", color=YELLOW)
-        ellipse_label.next_to(ellipse, RIGHT, buff=0.5)
-        
+        ellipse_label = MathTex(r"\frac{x^2}{4} + \frac{y^2}{3} = 1", color=WHITE)
+        ellipse_label.to_edge(UL)
+
         self.play(Create(ellipse), Write(ellipse_label))
         self.wait(1)
         
         # 标记点 P(-1, 0)
         P = axes.coords_to_point(-1, 0)
-        P_dot = Dot(P, color=RED, radius=0.08)
-        P_label = MathTex("P(-1,0)", color=RED)
+        P_dot = Dot(P, radius=0.08)
+        P_label = MathTex("P(-1,0)", color=WHITE, font_size=20)
         P_label.next_to(P_dot, DOWN, buff=0.1)
         
         self.play(Create(P_dot), Write(P_label))
@@ -156,7 +160,7 @@ class EllipseProblem(Scene):
         # 标记定点 (-4/7, 0)
         fixed_point = axes.coords_to_point(-4/7, 0)
         fixed_dot = Dot(fixed_point, color=GREEN, radius=0.08)
-        fixed_label = MathTex(r"\left(-\frac{4}{7}, 0\right)", color=GREEN)
+        fixed_label = MathTex(r"\left(-\frac{4}{7}, 0\right)", color=GREEN, font_size=20)
         fixed_label.next_to(fixed_dot, UP, buff=0.1)
         
         self.play(Create(fixed_dot), Write(fixed_label))
@@ -171,7 +175,7 @@ class EllipseProblem(Scene):
             return axes.plot(
                 lambda x: k * (x + 1),
                 x_range=[-3, 3],
-                color=BLUE,
+                color=WHITE,
                 stroke_width=2
             )
         
@@ -181,13 +185,13 @@ class EllipseProblem(Scene):
                 return axes.plot(
                     lambda x: 1000,  # 近似垂直线
                     x_range=[-3, 3],
-                    color=PURPLE,
+                    color=WHITE,
                     stroke_width=2
                 )
             return axes.plot(
                 lambda x: -1/k * (x + 1),
                 x_range=[-3, 3],
-                color=PURPLE,
+                color=WHITE,
                 stroke_width=2
             )
         
@@ -324,7 +328,7 @@ class EllipseProblem(Scene):
         self.clear()
         text210 = create_mixed_text_group("设直线  MN  的斜率为 $ k_{MN} $，计算得：")
         text210.shift(UP * 1)
-        text211 = create_mixed_text_group(r"k_{MN} = \frac{-7k}{4(k^2 - 1)}")
+        text211 = MathTex(r"k_{MN} = \frac{-7k}{4(k^2 - 1)}")
         self.play(Write(text210))
         self.play(Write(text211))
         self.wait(3)
@@ -336,9 +340,9 @@ class EllipseProblem(Scene):
         self.play(Write(text213))
         self.wait(3)
         self.clear()
-        text214 = create_mixed_text_group(r"令 $ y = 0 $，解得 $ x = -\frac{4}{7} $，与  k  无关。")
+        text214 = create_mixed_text_group(r"令 $ y = 0 $，解得 $ x = -\frac{4}{7} $，与  k  无关。").shift(UP)
         text215 = Text("因此，直线  MN  恒过定点：")
-        text216 = MathTex(r"\boxed{\left( -\frac{4}{7},\ 0 \right)}")
+        text216 = MathTex(r"\boxed{\left( -\frac{4}{7},\ 0 \right)}").shift(DOWN)
         self.play(Write(text214))
         self.play(Write(text215))
         self.play(Write(text216))
@@ -351,20 +355,20 @@ class EllipseProblem(Scene):
         self.wait(2)
         self.play(FadeOut(title3))
 
-        text311 = create_mixed_text_group("设点 $ E(x_0, y_0) $ 在椭圆上，满足：")
+        text311 = create_mixed_text_group("设点 $E(x_0, y_0)$ 在椭圆上，满足：")
         text311.shift(UP)
-        text312 = create_mixed_text_group(r"\frac{x_0^2}{4} + \frac{y_0^2}{3} = 1 \implies 3x_0^2 + 4y_0^2 = 12")
+        text312 = MathTex(r"\frac{x_0^2}{4} + \frac{y_0^2}{3} = 1 \implies 3x_0^2 + 4y_0^2 = 12")
 
         text313 = create_mixed_text_group("过  E(x_0, y_0) 、 F(0, 1)  的直线参数方程为：")
         text313.shift(UP)
         text314 = MathTex(r"x = x_0(1 - t), \quad y = y_0 + t(1 - y_0)")
 
-        text315 = create_mixed_text_group("代入椭圆方程，整理得关于  $t$  的二次方程。已知  $t = 0 $ 对应点 $ E $，另一解 $ t_H $ 对应点 $ H $，计算得：")
+        text315 = create_mixed_text_group("代入椭圆方程，整理得关于  $t$  的二次方程。已知  $t = 0$ 对应点 $E$，另一解 $t_H$ 对应点 $H$，计算得：")
         text315.shift(UP)
         text316 = MathTex(r"t_H = \frac{3 - y_0}{2 - y_0}")
 
         text317 = Text("由比例关系：")
-        text315.shift(UP)
+        text317.shift(UP)
         text318 = MathTex(r"\frac{FH}{EH} = \frac{1}{1 + \lambda} \implies \lambda = 2 - y_0")
         
         self.play(Write(text311))
@@ -384,20 +388,20 @@ class EllipseProblem(Scene):
         self.wait(3)
         self.clear()
         
-        text321 = create_mixed_text_group("过 $ E(x_0, y_0) $、 $Q(0, -1) $ 的直线参数方程为：")
+        text321 = create_mixed_text_group("过 $E(x_0, y_0)$、 $Q(0, -1)$ 的直线参数方程为：")
         text321.shift(UP)
         text322 = MathTex(r"x = x_0(1 - t), \quad y = y_0 - t(1 + y_0)")
 
         text323 = create_mixed_text_group("代入椭圆方程，得另一解 $ t_K $ 对应点  K ：")
-
+        text323.shift(UP)
         text324 = MathTex(r"t_K = \frac{3 + y_0}{2 + y_0}")
 
         text325 = Text("由比例关系：")
-
+        text325.shift(UP)
         text326 = MathTex(r"\frac{QK}{EK} = \frac{1}{1 + \mu} \implies \mu = 2 + y_0")
 
         text327 = Text("因此：")
-
+        text327.shift(UP)
         text328 = MathTex(r"\lambda + \mu = (2 - y_0) + (2 + y_0) = \boxed{4}")
         
         self.play(Write(text321))
@@ -419,7 +423,10 @@ class EllipseProblem(Scene):
 
         like = Text("点个赞呗( ๑ŏ ﹏ ŏ๑ ) ", font_size=48,t2c={'[0:3]': BLUE, '[4:-1]': RED})
         self.play(Write(like))
-        expr = Text("•﹏•", font_size=48)
+        expr = Text("(=^▽^=)", font_size=60)
+        heart = Text("♥", font_size=60)
         self.play(Transform(like, expr))
+        self.wait(3)
+        self.play(Transform(expr, heart))
         self.wait(3)
         
