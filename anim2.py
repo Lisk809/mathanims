@@ -25,7 +25,7 @@ def split_chinese_latex(text_string):
         if segment.startswith('$') and segment.endswith('$'):
             # 去掉首尾的$符号
             latex_content = segment[1:-1] if segment.startswith('$') and not segment.startswith('$$') else segment[2:-2]
-            parts.append(MathTex(latex_content), font_size=30)
+            parts.append(MathTex(latex_content, font_size=30))
         else:
             # 中文文本部分
             parts.append(Text(segment, font_size=24))
