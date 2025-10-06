@@ -25,7 +25,7 @@ def split_chinese_latex(text_string):
         if segment.startswith('$') and segment.endswith('$'):
             # 去掉首尾的$符号
             latex_content = segment[1:-1] if segment.startswith('$') and not segment.startswith('$$') else segment[2:-2]
-            parts.append(MathTex(latex_content))
+            parts.append(MathTex(latex_content), font_size=30)
         else:
             # 中文文本部分
             parts.append(Text(segment, font_size=24))
@@ -231,18 +231,18 @@ class EllipseProblem(Scene):
         
         # 创建中点 M 和 N
         M_dot = always_redraw(
-            lambda: Dot(get_M(), color=ORANGE, radius=0.06)
+            lambda: Dot(get_M(), color=BLUE, radius=0.06)
         )
         N_dot = always_redraw(
-            lambda: Dot(get_N(), color=PINK, radius=0.06)
+            lambda: Dot(get_N(), color=BLUE, radius=0.06)
         )
         
         M_label = always_redraw(
-            lambda: Text("M", color=ORANGE, font_size=24)
-            .next_to(M_dot, UP, buff=0.05)
+            lambda: Text("M", color=WHITE, font_size=24)
+            .next_to(M_dot, DOWN, buff=0.05)
         )
         N_label = always_redraw(
-            lambda: Text("N", color=PINK, font_size=24)
+            lambda: Text("N", color=WHITE, font_size=24)
             .next_to(N_dot, DOWN, buff=0.05)
         )
         
@@ -292,10 +292,10 @@ class EllipseProblem(Scene):
         text20 = create_mixed_text_group("过点 $ P(-1, 0) $ 作两条互相垂直的直线  $l_1, l_2$ ，设 $ l_1 $ 的斜率为 $ k $，则方程为：")
         text20.shift(UP * 1)
         text21 = MathTex("y = k(x + 1)")
-        text22 = Text("代入椭圆方程：")
+        text22 = Text("代入椭圆方程：", font_size=24)
         text22.shift(UP * 1)
         text23 = MathTex(r"\frac{x^2}{4} + \frac{[k(x+1)]^2}{3} = 1")
-        text24 = Text("整理得：")
+        text24 = Text("整理得：", font_size=24)
         text24.shift(UP * 1)
         text25 = MathTex("(3 + 4k^2)x^2 + 8k^2 x + (4k^2 - 12) = 0")
         
@@ -317,7 +317,7 @@ class EllipseProblem(Scene):
         text26 = create_mixed_text_group("设  $C(x_3, y_3), D(x_4, y_4)$ ，则中点  N  的坐标为：")
         text26.shift(UP * 1)
         text27 = MathTex(r"x_N = \frac{x_3 + x_4}{2} = -\frac{4}{3k^2 + 4}, \quad y_N = -\frac{1}{k}(x_N + 1) = -\frac{3k}{3k^2 + 4}")
-        text28 = Text("即：")
+        text28 = Text("即：", font_size=24)
         text28.shift(UP * 1)
         text29 = MathTex(r"N\left( -\frac{4}{3k^2 + 4}, -\frac{3k}{3k^2 + 4} \right)")
         self.play(Write(text26))
@@ -343,7 +343,7 @@ class EllipseProblem(Scene):
         self.wait(3)
         self.clear()
         text214 = create_mixed_text_group(r"令 $ y = 0 $，解得 $ x = -\frac{4}{7} $，与  k  无关。").shift(UP)
-        text215 = Text("因此，直线  MN  恒过定点：")
+        text215 = Text("因此，直线  MN  恒过定点：", font_size=24)
         text216 = MathTex(r"\boxed{\left( -\frac{4}{7},\ 0 \right)}").shift(DOWN)
         self.play(Write(text214))
         self.play(Write(text215))
@@ -361,7 +361,7 @@ class EllipseProblem(Scene):
         text311.shift(UP)
         text312 = MathTex(r"\frac{x_0^2}{4} + \frac{y_0^2}{3} = 1 \implies 3x_0^2 + 4y_0^2 = 12")
 
-        text313 = create_mixed_text_group("过  E(x_0, y_0) 、 F(0, 1)  的直线参数方程为：")
+        text313 = create_mixed_text_group("过 $ E(x_0, y_0) $,  $F(0, 1) $ 的直线参数方程为：")
         text313.shift(UP)
         text314 = MathTex(r"x = x_0(1 - t), \quad y = y_0 + t(1 - y_0)")
 
@@ -369,7 +369,7 @@ class EllipseProblem(Scene):
         text315.shift(UP)
         text316 = MathTex(r"t_H = \frac{3 - y_0}{2 - y_0}")
 
-        text317 = Text("由比例关系：")
+        text317 = Text("由比例关系：", font_size=24)
         text317.shift(UP)
         text318 = MathTex(r"\frac{FH}{EH} = \frac{1}{1 + \lambda} \implies \lambda = 2 - y_0")
         
@@ -390,7 +390,7 @@ class EllipseProblem(Scene):
         self.wait(3)
         self.clear()
         
-        text321 = create_mixed_text_group("过 $E(x_0, y_0)$、 $Q(0, -1)$ 的直线参数方程为：")
+        text321 = create_mixed_text_group("过 $ E(x_0, y_0) $, $Q(0, -1)$ 的直线参数方程为：")
         text321.shift(UP)
         text322 = MathTex(r"x = x_0(1 - t), \quad y = y_0 - t(1 + y_0)")
 
@@ -398,11 +398,11 @@ class EllipseProblem(Scene):
         text323.shift(UP)
         text324 = MathTex(r"t_K = \frac{3 + y_0}{2 + y_0}")
 
-        text325 = Text("由比例关系：")
+        text325 = Text("由比例关系：", font_size=24)
         text325.shift(UP)
         text326 = MathTex(r"\frac{QK}{EK} = \frac{1}{1 + \mu} \implies \mu = 2 + y_0")
 
-        text327 = Text("因此：")
+        text327 = Text("因此：", font_size=24)
         text327.shift(UP)
         text328 = MathTex(r"\lambda + \mu = (2 - y_0) + (2 + y_0) = \boxed{4}")
         
@@ -425,10 +425,11 @@ class EllipseProblem(Scene):
 
         like = Text("点个赞呗( ๑ŏ ﹏ ŏ๑ ) ", font_size=48,t2c={'[0:3]': BLUE, '[4:-1]': RED})
         self.play(Write(like))
-        expr = Text("(=^▽^=)", font_size=60)
-        heart = Text("♥", font_size=60)
+        expr = Text("（-＾〇＾-）", font_size=60)
+        heart = Text("♥", font_size=60, color=PINK)
         self.play(Transform(like, expr))
         self.wait(3)
-        self.play(Transform(expr, heart))
+        self.play(FadeOut(expr))
+        self.play(Write(heart))
         self.wait(3)
         
