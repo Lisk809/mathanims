@@ -47,6 +47,14 @@ class MHDGenerator(Scene):
         magnetic_field_label = Text("磁场 B", font_size=24, color=BLUE)
         magnetic_field_label.next_to(magnetic_field_rect, UP, buff=0.2)
         
+        # 添加磁场方向符号 (× 表示垂直纸面向内)
+        field_symbols = VGroup()
+        for x in np.arange(-2.5, 3, 1):
+            for y in np.arange(-1.5, 2, 1):
+                cross = Text("×", font_size=20, color=BLUE)
+                cross.move_to([x, y, 0])
+                field_symbols.add(cross)
+        
         # 创建电极
         left_electrode = Rectangle(
             width=0.2, height=3,
@@ -61,7 +69,6 @@ class MHDGenerator(Scene):
             stroke_color=GOLD_E, stroke_width=2
         )
         right_electrode.move_to(RIGHT * 2.5)
-        
         # 电极标签
         left_electrode_label = Text("电极(-)", font_size=20)
         left_electrode_label.next_to(left_electrode, LEFT, buff=0.2)
@@ -74,7 +81,10 @@ class MHDGenerator(Scene):
             Create(magnetic_field_rect),
             Write(magnetic_field_label)
         )
-        self.wait(1)
+        self.wait(0.5)
+        
+        self.play(LaggedStartMap(FadeIn, field_symbols, lag_ratio=0.05))
+        self.wait(0.5)
         
         self.play(
             Create(left_electrode),
@@ -87,6 +97,7 @@ class MHDGenerator(Scene):
         # 存储这些元素供后续使用
         self.magnetic_field_rect = magnetic_field_rect
         self.magnetic_field_label = magnetic_field_label
+        self.field_symbols = field_symbols
         self.left_electrode = left_electrode
         self.right_electrode = right_electrode
         self.left_electrode_label = left_electrode_label
@@ -110,45 +121,50 @@ class MHDGenerator(Scene):
         )
         self.wait(1)
         
-        # 创建带电粒子
+        # 创建带电粒子 - 增加粒子数量
         positive_particles = VGroup()
         negative_particles = VGroup()
         
-        for i in range(8):
+        num_particles = 15  # 增加粒子数量
+        
+        for i in range(num_particles):
+            # 随机位置
+            x_offset = np.random.uniform(-0.5, 0.5)
+            y_offset = np.random.uniform(-1, 1)
+            
             # 正电荷粒子
             pos_particle = Dot(
-                point=LEFT * 3 + UP * (1 - i * 0.5) + RIGHT * i * 0.2,
-                color=RED, radius=0.08
+                point=LEFT * 3.5 + UP * y_offset + RIGHT * i * 0.2 + RIGHT * x_offset,
+                color=RED, radius=0.06
             )
-            plus = Text("+", font_size=16, color=WHITE)
+            plus = Text("+", font_size=12, color=WHITE)
             plus.move_to(pos_particle.get_center())
             positive_particles.add(VGroup(pos_particle, plus))
             
             # 负电荷粒子
             neg_particle = Dot(
-                point=LEFT * 3 + DOWN * (1 - i * 0.5) + RIGHT * i * 0.2,
-                color=BLUE, radius=0.08
+                point=LEFT * 3.5 + DOWN * y_offset + RIGHT * i * 0.2 + RIGHT * x_offset,
+                color=BLUE, radius=0.06
             )
-            minus = Text("-", font_size=16, color=WHITE)
+            minus = Text("-", font_size=12, color=WHITE)
             minus.move_to(neg_particle.get_center())
             negative_particles.add(VGroup(neg_particle, minus))
-        
-        # 显示粒子流动
+            # 显示粒子流动
         self.play(
-            LaggedStart(*[Create(p) for p in positive_particles], lag_ratio=0.1),
-            LaggedStart(*[Create(p) for p in negative_particles], lag_ratio=0.1)
+            LaggedStart(*[Create(p) for p in positive_particles], lag_ratio=0.05),
+            LaggedStart(*[Create(p) for p in negative_particles], lag_ratio=0.05)
         )
         
         # 动画粒子移动
         positive_animation = LaggedStart(*[
-            p.animate.shift(RIGHT * 6) for p in positive_particles
-        ], lag_ratio=0.1)
+            p.animate.shift(RIGHT * 7) for p in positive_particles
+        ], lag_ratio=0.05)
         
         negative_animation = LaggedStart(*[
-            p.animate.shift(RIGHT * 6) for p in negative_particles
-        ], lag_ratio=0.1)
+            p.animate.shift(RIGHT * 7) for p in negative_particles
+        ], lag_ratio=0.05)
         
-        self.play(positive_animation, negative_animation, run_time=3)
+        self.play(positive_animation, negative_animation, run_time=4)
         self.wait(1)
         
         # 清除粒子
@@ -159,10 +175,10 @@ class MHDGenerator(Scene):
             FadeOut(flow_label)
         )
         
-        # 显示洛伦兹力
-        self.show_lorentz_force()
+        # 显示洛伦兹力 - 动态展示单个粒子受力分析
+        self.show_lorentz_force_dynamic()
 
-    def show_lorentz_force(self):
+    def show_lorentz_force_dynamic(self):
         # 添加洛伦兹力说明
         lorentz_text = Text("洛伦兹力: F = q(v × B)", font_size=28, color=YELLOW)
         lorentz_text.to_edge(DOWN)
@@ -172,7 +188,7 @@ class MHDGenerator(Scene):
         
         # 创建单个正电荷粒子
         pos_particle = Dot(color=RED, radius=0.1)
-        pos_particle.move_to(LEFT * 2 + UP * 0.5)
+        pos_particle.move_to(LEFT * 1 + UP * 0.5)
         plus = Text("+", font_size=20, color=WHITE)
         plus.move_to(pos_particle.get_center())
         positive_charge = VGroup(pos_particle, plus)
@@ -196,22 +212,23 @@ class MHDGenerator(Scene):
         )
         magnetic_label = Text("B", font_size=20, color=BLUE)
         magnetic_label.next_to(magnetic_vector, LEFT, buff=0.1)
-        
-        # 创建洛伦兹力向量
+        # 创建洛伦兹力向量 - 修正为向下
         force_vector = Arrow(
             start=positive_charge.get_center(),
-            end=positive_charge.get_center() + OUT * 1.5,
+            end=positive_charge.get_center() + DOWN * 1.5,
             color=YELLOW, buff=0,
             stroke_width=4
         )
-        # 由于Manim 3D限制，我们用虚线表示向外的向量
-        force_vector_dashed = DashedLine(
-            start=positive_charge.get_center(),
-            end=positive_charge.get_center() + RIGHT * 1.5,
-            color=YELLOW, stroke_width=4
-        )
         force_label = Text("F", font_size=20, color=YELLOW)
-        force_label.next_to(force_vector_dashed, DOWN, buff=0.1)
+        force_label.next_to(force_vector, RIGHT, buff=0.1)
+        
+        # 显示叉乘符号
+        cross_product = MathTex("\\vec{v} \\times \\vec{B}", font_size=24, color=WHITE)
+        cross_product.move_to(positive_charge.get_center() + RIGHT * 0.8 + UP * 0.8)
+        
+        # 显示右手定则示意图
+        hand_rule_text = Text("右手定则", font_size=20, color=GREEN)
+        hand_rule_text.move_to(positive_charge.get_center() + LEFT * 2 + UP * 1)
         
         self.play(Create(positive_charge))
         self.wait(0.5)
@@ -228,10 +245,23 @@ class MHDGenerator(Scene):
         )
         self.wait(0.5)
         
+        self.play(Write(cross_product))
+        self.wait(1)
+        
+        self.play(Write(hand_rule_text))
+        self.wait(1)
+        
         self.play(
-            Create(force_vector_dashed),
+            Create(force_vector),
             Write(force_label)
         )
+        self.wait(2)
+        
+        # 显示电荷分离效果
+        separation_text = Text("正负电荷分离产生电势差", font_size=24, color=PURPLE)
+        separation_text.move_to(positive_charge.get_center() + DOWN * 2.5)
+        
+        self.play(Write(separation_text))
         self.wait(2)
         
         # 清除单个粒子演示
@@ -241,120 +271,118 @@ class MHDGenerator(Scene):
             FadeOut(velocity_label),
             FadeOut(magnetic_vector),
             FadeOut(magnetic_label),
-            FadeOut(force_vector_dashed),
+            FadeOut(force_vector),
             FadeOut(force_label),
+            FadeOut(cross_product),
+            FadeOut(hand_rule_text),
+            FadeOut(separation_text),
             FadeOut(lorentz_text)
         )
 
     def show_emf_calculation(self):
+        # 清除当前场景，专注于公式推导
+        self.clear_scene_for_calculation()
+        
         # 电动势计算标题
-        emf_title = Text("电动势计算", font_size=36, color=GREEN)
+        emf_title = Text("电动势计算公式推导", font_size=36, color=GREEN)
         emf_title.to_edge(UP)
         
-        self.play(ReplacementTransform(self.magnetic_field_label, emf_title))
+        self.play(Write(emf_title))
         self.wait(1)
         
-        # 显示电极间距
-        distance_line = DashedLine(
-            start=self.left_electrode.get_right() + UP * 1.5,
-            end=self.right_electrode.get_left() + UP * 1.5,
-            color=WHITE, stroke_width=2
+        # 步骤1: 洛伦兹力公式
+        step1 = MathTex(
+            "\\vec{F} = q(\\vec{v} \\times \\vec{B})",
+            font_size=36,
+            color=YELLOW
         )
-        distance_label = Text("d", font_size=24, color=WHITE)
-        distance_label.next_to(distance_line, UP, buff=0.1)
+        step1.shift(UP * 2)
         
-        self.play(
-            Create(distance_line),
-            Write(distance_label)
+        self.play(Write(step1))
+        self.wait(2)
+        
+        # 步骤2: 电场强度定义
+        step2 = MathTex(
+            "\\vec{E} = \\frac{\\vec{F}}{q} = \\vec{v} \\times \\vec{B}",
+            font_size=36,
+            color=YELLOW
         )
-        self.wait(1)
+        step2.next_to(step1, DOWN, buff=0.5)
         
-        # 电动势公式
-        emf_formula = MathTex(
+        self.play(Write(step2))
+        self.wait(2)
+        # 步骤3: 电动势定义
+        step3 = MathTex(
+            "\\mathcal{E} = \\oint \\vec{E} \\cdot d\\vec{l}",
+            font_size=36,
+            color=YELLOW
+        )
+        step3.next_to(step2, DOWN, buff=0.5)
+        
+        self.play(Write(step3))
+        self.wait(2)
+        
+        # 步骤4: 在电极间积分
+        step4 = MathTex(
+            "\\mathcal{E} = \\int_{-}^{+} (\\vec{v} \\times \\vec{B}) \\cdot d\\vec{l}",
+            font_size=36,
+            color=YELLOW
+        )
+        step4.next_to(step3, DOWN, buff=0.5)
+        
+        self.play(Write(step4))
+        self.wait(2)
+        
+        # 步骤5: 简化公式
+        step5 = MathTex(
             "\\mathcal{E} = B \\cdot v \\cdot d",
             font_size=40,
             color=GREEN
         )
-        emf_formula.shift(DOWN * 0.5)
+        step5.next_to(step4, DOWN, buff=0.5)
         
-        self.play(Write(emf_formula))
+        self.play(Write(step5))
         self.wait(2)
         
         # 公式解释
         explanation = VGroup(
             Text("其中:", font_size=24),
-            Text("ℰ - 电动势"),
+            Text("\\mathcal{E} - 电动势"),
             Text("B - 磁感应强度"),
             Text("v - 等离子体流速"),
             Text("d - 电极间距")
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.2)
         explanation.scale(0.8)
-        explanation.next_to(emf_formula, DOWN, buff=0.5)
+        explanation.next_to(step5, DOWN, buff=0.5)
         
         self.play(Write(explanation))
         self.wait(3)
         
-        # 清除电动势部分
+        # 清除公式推导部分
         self.play(
-            FadeOut(emf_formula),
-            FadeOut(explanation),
-            FadeOut(distance_line),
-            FadeOut(distance_label),
-            FadeOut(emf_title)
+            FadeOut(emf_title),
+            FadeOut(step1),
+            FadeOut(step2),
+            FadeOut(step3),
+            FadeOut(step4),
+            FadeOut(step5),
+            FadeOut(explanation)
         )
         
-        # 恢复磁场标签
-        self.magnetic_field_label = Text("磁场 B", font_size=24, color=BLUE)
-        self.magnetic_field_label.next_to(self.magnetic_field_rect, UP, buff=0.2)
-        self.play(Write(self.magnetic_field_label))
+        # 恢复原始场景
+        self.restore_scene_after_calculation()
 
     def show_internal_resistance(self):
+        # 清除当前场景，专注于内阻推导
+        self.clear_scene_for_calculation()
+        
         # 内阻标题
         resistance_title = Text("内阻成因与计算", font_size=36, color=ORANGE)
         resistance_title.to_edge(UP)
         
-        self.play(ReplacementTransform(self.magnetic_field_label, resistance_title))
+        self.play(Write(resistance_title))
         self.wait(1)
         
-        # 创建等离子体区域
-        plasma_region = Rectangle(
-            width=5, height=3,
-            fill_color=PURPLE, fill_opacity=0.3,
-            stroke_color=PURPLE, stroke_width=2
-        )
-        
-        plasma_label = Text("等离子体", font_size=24, color=PURPLE)
-        plasma_label.move_to(plasma_region.get_center())
-        
-        self.play(
-            Create(plasma_region),
-            Write(plasma_label)
-        )
-        self.wait(1)
-        
-        # 内阻公式
-        resistance_formula = MathTex(
-            "R_{int} = \\frac{d}{\\sigma \\cdot A}",
-            font_size=40,
-            color=ORANGE
-        )
-        resistance_formula.shift(DOWN * 0.5)
-        
-        self.play(Write(resistance_formula))
-        self.wait(2)
-        # 公式解释
-        explanation = VGroup(
-            Text("其中:", font_size=24),
-            Text("R - 内阻"),
-            Text("σ - 等离子体电导率"),
-            Text("A - 电极面积"),
-            Text("d - 电极间距")
-        ).arrange(DOWN, aligned_edge=LEFT, buff=0.2)
-        explanation.scale(0.8)
-        explanation.next_to(resistance_formula, DOWN, buff=0.5)
-        
-        self.play(Write(explanation))
-        self.wait(3)
         # 内阻成因说明
         cause_text = Text(
             "内阻成因: 等离子体本身具有电阻，\n" +
@@ -362,20 +390,69 @@ class MHDGenerator(Scene):
             font_size=24,
             color=YELLOW
         )
-        cause_text.next_to(explanation, DOWN, buff=0.5)
+        cause_text.shift(UP * 2)
         
         self.play(Write(cause_text))
+        self.wait(2)
+        
+        # 电阻公式
+        resistance_formula = MathTex(
+            "R = \\rho \\frac{L}{A}",
+            font_size=40,
+            color=ORANGE
+        )
+        resistance_formula.next_to(cause_text, DOWN, buff=0.5)
+        
+        self.play(Write(resistance_formula))
+        self.wait(2)
+        # 应用到磁流体发电机
+        mhd_resistance = MathTex(
+            "R_{int} = \\frac{d}{\\sigma \\cdot A}",
+            font_size=40,
+            color=ORANGE
+        )
+        mhd_resistance.next_to(resistance_formula, DOWN, buff=0.5)
+        
+        self.play(Write(mhd_resistance))
+        self.wait(2)
+        
+        # 公式解释
+        explanation = VGroup(
+            Text("其中:", font_size=24),
+            Text("R_{int} - 内阻"),
+            Text("\\sigma - 等离子体电导率"),
+            Text("A - 电极面积"),
+            Text("d - 电极间距")
+        ).arrange(DOWN, aligned_edge=LEFT, buff=0.2)
+        explanation.scale(0.8)
+        explanation.next_to(mhd_resistance, DOWN, buff=0.5)
+        
+        self.play(Write(explanation))
         self.wait(3)
+        
+        # 效率考虑
+        efficiency_text = Text(
+            "内阻导致能量损失，降低发电效率",
+            font_size=24,
+            color=RED
+        )
+        efficiency_text.next_to(explanation, DOWN, buff=0.5)
+        
+        self.play(Write(efficiency_text))
+        self.wait(2)
         
         # 清除内阻部分
         self.play(
-            FadeOut(resistance_formula),
-            FadeOut(explanation),
+            FadeOut(resistance_title),
             FadeOut(cause_text),
-            FadeOut(plasma_region),
-            FadeOut(plasma_label),
-            FadeOut(resistance_title)
+            FadeOut(resistance_formula),
+            FadeOut(mhd_resistance),
+            FadeOut(explanation),
+            FadeOut(efficiency_text)
         )
+        
+        # 恢复原始场景
+        self.restore_scene_after_calculation()
 
     def show_conclusion(self):
         # 总结标题
@@ -389,8 +466,9 @@ class MHDGenerator(Scene):
         summary_points = VGroup(
             Text("• 直接将热能转换为电能", font_size=24),
             Text("• 利用等离子体在磁场中运动产生电动势", font_size=24),
+            Text("• 洛伦兹力导致电荷分离", font_size=24),
             Text("• 电动势公式: ℰ = B·v·d", font_size=24),
-            Text("• 内阻公式: R = d/(σ·A)", font_size=24),
+            Text("• 内阻公式: R_int = d/(σ·A)", font_size=24),
             Text("• 高效率、无运动部件、环保", font_size=24)
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.3)
         summary_points.shift(UP * 0.5)
@@ -411,3 +489,24 @@ class MHDGenerator(Scene):
         
         # 淡出所有元素
         self.play(*[FadeOut(mob) for mob in self.mobjects])
+
+    def clear_scene_for_calculation(self):
+        # 存储当前场景的所有元素
+        self.saved_scene = VGroup(*self.mobjects)
+        
+        # 淡出所有元素
+        self.play(FadeOut(self.saved_scene))
+        
+    def restore_scene_after_calculation(self):
+        # 恢复原始场景
+        self.play(FadeIn(self.saved_scene))
+        
+        # 更新引用
+        self.magnetic_field_rect = self.saved_scene[0]
+        self.magnetic_field_label = self.saved_scene[1]
+        self.field_symbols = self.saved_scene[2]
+        self.left_electrode = self.saved_scene[3]
+        self.right_electrode = self.saved_scene[4]
+        self.left_electrode_label = self.saved_scene[5]
+        self.right_electrode_label = self.saved_scene[6]
+        
