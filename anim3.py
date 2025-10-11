@@ -11,7 +11,7 @@ class MHDGenerator(Scene):
         
         # 介绍磁流体发电机
         intro_text = Text(
-            "磁流体发电机: 将热能直接转换为电能",
+            "磁流体发电机",
             font_size=30,
             color=WHITE
         )
@@ -492,7 +492,7 @@ class MHDGenerator(Scene):
 
     def clear_scene_for_calculation(self):
         # 存储当前场景的所有元素
-        self.saved_scene = VGroup(*self.mobjects)
+        self.saved_scene = Group(*self.mobjects)
         
         # 淡出所有元素
         self.play(FadeOut(self.saved_scene))
